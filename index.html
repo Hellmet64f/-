@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Página Pessoal do Júlio - BEM VINDOS</title>
+    <style>
+        body {
+            background-color: #000000;
+            background-image: repeating-linear-gradient(45deg, #050505 25%, transparent 25%, transparent 75%, #050505 75%, #050505), repeating-linear-gradient(45deg, #050505 25%, #000000 25%, #000000 75%, #050505 75%, #050505);
+            background-position: 0 0, 10px 10px;
+            background-size: 20px 20px;
+            color: #00FF00;
+            font-family: "Times New Roman", Times, serif;
+            margin: 20px;
+            cursor: crosshair; /* Cursor perturbador */
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+        }
+
+        .blink {
+            animation: blinker 0.8s linear infinite;
+        }
+
+        .fast-blink {
+            animation: blinker 0.2s linear infinite;
+            color: #FF0000;
+        }
+
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+
+        a:link {
+            color: #0000FF; /* Azul escuro no fundo preto = péssimo para ler */
+            text-decoration: underline;
+        }
+
+        a:visited {
+            color: #800080;
+        }
+
+        table {
+            margin-left: auto;
+            margin-right: auto;
+            background-color: #222;
+        }
+
+        hr {
+            border: 0;
+            border-top: 3px double #FF0000;
+            margin: 20px 0;
+        }
+
+        .hidden-text {
+            color: #000000;
+            font-size: 10px;
+        }
+        
+        .hidden-text:hover {
+            color: #FF0000;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 5px ridge #808080;
+            padding: 15px;
+            background-color: #0a0a0a;
+        }
+
+        .construction {
+            display: block;
+            margin: 0 auto;
+            text-align: center;
+            background-color: yellow;
+            color: black;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            padding: 5px;
+            width: 300px;
+            border: 3px dashed black;
+        }
+
+        .counter {
+            font-family: "Courier New", Courier, monospace;
+            background: black;
+            color: red;
+            font-size: 24px;
+            border: 3px inset #555;
+            padding: 5px;
+            display: inline-block;
+            letter-spacing: 5px;
+        }
+
+        .guestbook {
+            background-color: #000080;
+            color: white;
+            padding: 10px;
+            border: 2px solid white;
+            text-align: center;
+            width: 50%;
+            margin: 20px auto;
+        }
+
+        .tracker-box {
+            border: 1px solid red;
+            background-color: #330000;
+            color: #FF0000;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 12px;
+            padding: 5px;
+            margin: 10px auto;
+            width: 80%;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <marquee scrollamount="15" bgcolor="#FF0000" style="color: #FFFF00; font-size: 24px; font-weight: bold; font-family: Arial;">
+        !!! BEM-VINDO À MINHA HOME PAGE !!! VOCÊ É O VISITANTE NÚMERO 00666 !!!
+    </marquee>
+
+    <div class="container">
+        
+        <div class="tracker-box" id="tracker-box">
+            [SISTEMA DE SEGURANÇA ATIVADO] A estabelecer ligação...<br>
+        </div>
+
+        <h1 class="blink" style="color: #FFFF00; font-size: 40px;">~~ O Canto da Web do Júlio ~~</h1>
+        <center><p style="font-size: 12px;">Melhor visualizado no Netscape Navigator 3.0, resolução 800x600</p></center>
+
+        <div class="construction">
+            🚧 ATENÇÃO 🚧<br>
+            PÁGINA EM ETERNA CONSTRUÇÃO
+        </div>
+
+        <hr>
+
+        <p>Olá, navegante da <i>World Wide Web</i>!</p>
+        <p>Meu nome é Júlio. Eu fiz essa página usando o bloco de notas para aprender HTML e compartilhar meus passatempos com o mundo. Se você chegou aqui pelo anel de sites (WebRing) de Colecionadores de Selos, seja muito bem-vindo! Fique à vontade para olhar ao redor.</p>
+        <p>Desculpe a bagunça, eu ainda estou arrumando os links. Tem algumas coisas que eu não consigo apagar do código, não importa o quanto eu tente.</p>
+
+        <table border="4" cellpadding="10" bordercolor="#00FF00" width="80%">
+            <tr>
+                <td align="center" bgcolor="#000000">
+                    <img id="foto-perfil" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="[Imagem Quebrada: foto_perfil.jpg]" style="width: 100px; height: 100px; border: 1px solid red;"><br>
+                    <small><i id="foto-legenda">(Minha foto não quer carregar. O rosto ficou borrado na revelação de novo.)</i></small>
+                </td>
+                <td valign="top">
+                    <h3 style="margin-top:0; color: #00FFFF;">O que você vai encontrar aqui:</h3>
+                    <ul>
+                        <li><a href="#hobbies">Meus Hobbies Normais</a></li>
+                        <li><a href="#fotos">Fotos da Vizinhança</a></li>
+                        <li><a href="#dicas">Dicas de Limpeza Pesada</a></li>
+                        <li><a href="javascript:void(0);" onclick="erroPorao()" style="color: darkred;"><s>O Porão</s></a> (NÃO CLIQUE)</li>
+                        <li><a href="javascript:void(0);" onclick="abrirBlocoDeNotas()">Meu Diário.txt (Não Clique)</a></li>
+                        <li><a href="data:text/plain;charset=utf-8,Voc%C3%AA%20n%C3%A3o%20deveria%20ter%20baixado%20isso.%0A%0AEle%20j%C3%A1%20sabe%20que%20voc%C3%AA%20est%C3%A1%20olhando.%0A%0AN%C3%A3o%20olhe%20para%20tr%C3%A1s." download="LOG_DE_SISTEMA.txt">Baixar LOG_DE_SISTEMA.txt</a></li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+
+        <hr>
+
+        <h2 id="hobbies" style="color: #FF00FF;">Meus Hobbies! ☻</h2>
+        <p>Como a maioria das pessoas, eu gosto de colecionar selos antigos, montar quebra-cabeças e taxidermia amadora. É muito relaxante pegar algo que já não tem vida e fazer parecer que está olhando para você. <br><br>As vezes eu acordo de madrugada e eles estão todos virados para a minha cama.</p>
+        <p>Também adoro escutar música MIDI!</p>
+        <center>
+            <table border="1" bordercolor="white" bgcolor="gray" width="300">
+                <tr>
+                    <td align="center">
+                        <small style="color: black;"><i>[Plugin de Áudio Não Suportado]</i><br>Tocando: <b>choro_de_crianca.mid</b></small>
+                    </td>
+                </tr>
+            </table>
+        </center>
+
+        <hr>
+
+        <h2 id="fotos">Registros de Observação</h2>
+        <p>Eu passo bastante tempo na minha janela. É importante saber quem entra e quem sai da rua. Eu anoto tudo num caderno. A senhora do número 42 sempre esquece a janela do banheiro aberta entre as 2h e 3h da manhã.</p>
+        
+        <table border="2" cellpadding="5" cellspacing="2" bordercolor="red" width="100%">
+            <tr bgcolor="#440000">
+                <th>Nome do Vizinho</th>
+                <th>Casa</th>
+                <th>Status</th>
+            </tr>
+            <tr>
+                <td>Dona Lurdes</td>
+                <td>Nº 12</td>
+                <td>Segura</td>
+            </tr>
+            <tr>
+                <td>Marcos Silva</td>
+                <td>Nº 28</td>
+                <td>Seguro</td>
+            </tr>
+            <tr>
+                <td>Família Pereira</td>
+                <td>Nº 45</td>
+                <td><b>DESAPARECIDOS</b></td>
+            </tr>
+            <tr>
+                <td>Você</td>
+                <td>Atrás da tela</td>
+                <td class="fast-blink">O PRÓXIMO</td>
+            </tr>
+        </table>
+
+        <p class="hidden-text">eu consigo te ver lendo isso. não olhe para a janela agora. continue olhando para o monitor.</p>
+
+        <hr>
+
+        <center>
+            <h3>Assine meu Livro de Visitas!</h3>
+            <div class="guestbook">
+                <p>Gostou do meu site? Deixe um recadinho!</p>
+                <form action="#" method="get" onsubmit="return false;">
+                    Nome: <input type="text" size="20" style="background-color: black; color: green; border: 1px solid green;"><br><br>
+                    O que achou do site?<br>
+                    <textarea id="creepy-area" rows="4" cols="30" style="background-color: black; color: green; border: 1px solid green;" onfocus="possuirTexto()"></textarea><br><br>
+                    <input type="button" value="Enviar para o Júlio" onclick="armadilhaDoJulio()">
+                </form>
+            </div>
+
+            <p>Você é o visitante de número:</p>
+            <div class="counter">0 0 0 6 6 6</div>
+            <br><br>
+
+            <marquee direction="right" scrollamount="5" style="width: 200px;">
+                👁️..................................
+            </marquee>
+            <marquee direction="left" scrollamount="8" style="width: 200px;">
+                ..................................👁️
+            </marquee>
+
+            <p style="font-size: 10px; margin-top: 50px; color: #333;">
+                Última atualização: 03 de Novembro de 1998.<br>
+                Criado no Microsoft FrontPage Express.
+            </p>
+        </center>
+    </div>
+
+    <!-- Falso Bloco de Notas do Windows 95 -->
+    <div id="fake-notepad" style="display: none; position: fixed; top: 30%; left: 50%; transform: translate(-50%, -20%); width: 450px; height: 350px; background-color: #c0c0c0; border-top: 2px solid #fff; border-left: 2px solid #fff; border-right: 2px solid #000; border-bottom: 2px solid #000; z-index: 9999; box-shadow: 10px 10px 15px rgba(0,0,0,0.8);">
+        <div style="background-color: #000080; color: white; padding: 2px 4px; font-family: 'Tahoma', sans-serif; font-size: 14px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
+            <span><span style="display:inline-block; width:12px; height:12px; background:white; margin-right:5px; border:1px solid gray;"></span>diario.txt - Bloco de Notas</span>
+            <button onclick="document.getElementById('fake-notepad').style.display='none'" style="background: #c0c0c0; color: black; border-top: 1px solid #fff; border-left: 1px solid #fff; border-right: 1px solid #000; border-bottom: 1px solid #000; font-weight: bold; padding: 0 4px; cursor: pointer; font-family: sans-serif;">X</button>
+        </div>
+        <div style="padding: 2px 5px; font-family: 'Tahoma', sans-serif; font-size: 12px; color: black; border-bottom: 1px solid #808080;">
+            <span style="margin-right: 10px;"><u>A</u>rquivo</span>
+            <span style="margin-right: 10px;"><u>E</u>ditar</span>
+            <span style="margin-right: 10px;"><u>P</u>esquisar</span>
+            <span>A<u>j</u>uda</span>
+        </div>
+        <div id="notepad-area" style="width: 100%; height: calc(100% - 46px); border-top: 2px solid #808080; border-left: 2px solid #808080; border-right: 2px solid #fff; border-bottom: 2px solid #fff; margin: 0; padding: 5px; font-family: 'Courier New', Courier, monospace; font-size: 14px; background: white; color: black; box-sizing: border-box; overflow-y: auto; white-space: pre-wrap;"></div>
+    </div>
+
+    <!-- Ecrã de Erro Fatal do Porão (Restaurado para imersão de terror e download) -->
+    <div id="tela-erro-porao" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #0a0a0a; color: #cccccc; font-family: 'Courier New', Courier, monospace; z-index: 100000; padding: 40px; box-sizing: border-box; overflow: auto;">
+        <h2 style="background: #aa0000; color: white; display: inline-block; padding: 5px; font-weight: bold;">ERRO FATAL: DIRETÓRIO VAZIO</h2>
+        <p>A ligação foi comprometida. O sistema perdeu o contacto com o anfitrião.</p>
+        <p>O ambiente está deserto. Tentando extrair o último registo visual da memória cache...</p>
+        <br>
+        <div id="porao-img-container" style="margin-top: 30px; text-align: center;">
+            <span class="blink" style="font-size: 24px; color: red;">[ EXTRAINDO DADOS CORROMPIDOS... ]</span>
+        </div>
+    </div>
+
+    <!-- Falsa Pasta do Windows 95 (A Pasta da Vítima) -->
+    <div id="fake-folder" style="display: none; position: fixed; top: 20%; left: 50%; transform: translateX(-50%); width: 450px; background-color: #c0c0c0; border-top: 2px solid #fff; border-left: 2px solid #fff; border-right: 2px solid #000; border-bottom: 2px solid #000; z-index: 10000; box-shadow: 10px 10px 15px rgba(0,0,0,0.8); color: black;">
+        <div style="background-color: #000080; color: white; padding: 2px 4px; font-family: 'Tahoma', sans-serif; font-size: 14px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
+            <span><span style="display:inline-block; width:12px; height:12px; background:yellow; margin-right:5px; border:1px solid gray;"></span>C:\Oculto\Vitimas\ALVO_ATUAL</span>
+            <button onclick="document.getElementById('fake-folder').style.display='none'" style="background: #c0c0c0; color: black; border-top: 1px solid #fff; border-left: 1px solid #fff; border-right: 1px solid #000; border-bottom: 1px solid #000; font-weight: bold; padding: 0 4px; cursor: pointer; font-family: sans-serif;">X</button>
+        </div>
+        <div style="padding: 2px 5px; font-family: 'Tahoma', sans-serif; font-size: 12px; border-bottom: 1px solid #808080;">
+            <span style="margin-right: 10px;"><u>F</u>icheiro</span>
+            <span style="margin-right: 10px;"><u>E</u>ditar</span>
+            <span style="margin-right: 10px;"><u>V</u>er</span>
+            <span>A<u>j</u>uda</span>
+        </div>
+        <div style="padding: 10px; font-family: 'Tahoma', sans-serif; font-size: 14px; background: white; height: 250px; overflow-y: scroll; border-top: 2px solid #808080; border-left: 2px solid #808080;">
+            <ul style="list-style-type: none; padding: 0; margin: 0;">
+                <li style="margin-bottom: 15px; cursor: pointer; display: flex; align-items: center;" onclick="alert('ERRO: O ficheiro está a ser usado por outro processo.\n\nELE ESTÁ A VER ESTA FOTO AGORA MESMO.')">
+                    <img src="https://randomuser.me/api/portraits/women/68.jpg" style="width: 45px; height: 45px; margin-right: 10px; border: 1px solid black; filter: sepia(1) hue-rotate(320deg) brightness(0.6) contrast(1.5);"> 
+                    <span><b>dona_lurdes_n12.jpg</b><br><small style="color: gray;">Modificado: Hoje, 03:14 AM</small></span>
+                </li>
+                <li style="margin-bottom: 15px; cursor: pointer; display: flex; align-items: center;" onclick="alert('ACESSO NEGADO. ELE AINDA ESTÁ NA CASA Nº 28.')">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" style="width: 45px; height: 45px; margin-right: 10px; border: 1px solid black; filter: sepia(1) hue-rotate(320deg) brightness(0.6) contrast(1.5);"> 
+                    <span><b>marcos_silva_n28.jpg</b><br><small style="color: gray;">Modificado: Hoje, 04:22 AM</small></span>
+                </li>
+                <li style="margin-bottom: 15px; cursor: pointer; display: flex; align-items: center;" onclick="alert('FICHEIRO CORROMPIDO.\n\nEles gritaram muito. O áudio foi apagado.')">
+                    <span style="font-size: 24px; margin-right: 10px;">📁</span> 
+                    <span><b>familia_pereira_n45_DESAPARECIDOS.zip</b><br><small style="color: red; font-weight: bold;">Modificado: Onde eles estão?</small></span>
+                </li>
+                <li style="margin-bottom: 15px; cursor: pointer; display: flex; align-items: center;" onclick="alert('LOG DE SISTEMA:\nO utilizador não percebeu que a luz da webcam piscou.')">
+                    <span style="font-size: 24px; margin-right: 10px;">📄</span> 
+                    <span><b>webcam_historico.log</b><br><small style="color: gray;">Modificado: Há 2 minutos</small></span>
+                </li>
+                <li style="margin-bottom: 15px; cursor: pointer; display: flex; align-items: center; color: darkred;" onclick="baixarVirusFalso()">
+                    <span style="font-size: 24px; margin-right: 10px;">⚙️</span> 
+                    <span><b>extrair_dados_vitima.exe</b><br><small style="color: gray;">Tamanho: 666 KB</small></span>
+                </li>
+                <li style="margin-bottom: 15px; cursor: pointer; display: flex; align-items: center; color: red; font-weight: bold;" onclick="abrirBlocoDeNotas('Eu avisei-te para não mexeres nas pastas dele.\n\nAgora ele sabe que tu descobriste.\n\nFoge enquanto podes.')">
+                    <span style="font-size: 24px; margin-right: 10px;">⚠️</span> 
+                    <span><b>LER_ISTO_AGORA.txt</b><br><small style="color: gray;">Modificado: AGORA</small></span>
+                </li>
+            </ul>
+        </div>
+        <div style="background: #c0c0c0; padding: 2px; font-family: 'Tahoma', sans-serif; font-size: 11px; border-top: 1px solid #808080;">
+            6 objeto(s) | 2,14 MB
+        </div>
+    </div>
+
+    <script>
+        // Rastreador Assustador (Doxxing Falso)
+        window.onload = function() {
+            var tracker = document.getElementById('tracker-box');
+            setTimeout(function() {
+                var os = navigator.platform;
+                var res = screen.width + "x" + screen.height;
+                tracker.innerHTML += "-> Máquina detetada: " + os + "<br>";
+                tracker.innerHTML += "-> Resolução do ecrã: " + res + "<br>";
+                tracker.innerHTML += "-> PERFIL REGISTADO. NÃO DESLIGUE O MONITOR.";
+            }, 2500);
+        };
+
+        // Possessão da Caixa de Texto do Livro de Visitas
+        let guestbookPossessed = false;
+        function possuirTexto() {
+            if(guestbookPossessed) return;
+            guestbookPossessed = true;
+            let area = document.getElementById('creepy-area');
+            area.value = "";
+            let msg = "ELE SABE ONDE ESTÁS... NÃO OLHES PARA TRÁS... ";
+            msg = msg.repeat(5); // Repete a mensagem
+            let i = 0;
+            let interval = setInterval(() => {
+                area.value += msg.charAt(i);
+                i++;
+                if(i >= msg.length) clearInterval(interval);
+            }, 60); // Velocidade de digitação rápida e artificial
+        }
+
+        // Bloco de Notas Dinâmico
+        let typeInt; // Variável global para controlar a digitação
+
+        function abrirBlocoDeNotas() {
+            var notepad = document.getElementById('fake-notepad');
+            notepad.style.display = 'block';
+            
+            // Dá uma piscada vermelha no fundo da tela para assustar
+            document.body.style.backgroundColor = "#330000";
+            setTimeout(function() {
+                document.body.style.backgroundColor = "#000000";
+            }, 150);
+
+            // Limpa a digitação anterior se houver
+            if(typeInt) clearInterval(typeInt);
+
+            // Efeito máquina de escrever
+            let text = "12 de Novembro de 1998\n\nEu não devia ter mexido no computador dele. Eu sabia que ele era um pouco fora da cabeça, mas o que encontrei é doentio.\n\nEle tem pastas de todos os vizinhos. Os CPFs, telefones, rotinas... E o pior: dezenas de fotos tiradas de DENTRO da casa deles, enquanto dormiam.\n\nComo ele entrou lá?\n\nEle não coleciona selos. Ele coleciona pessoas.\n\nAchei uma pasta nova. Tem o teu nome nela.";
+            
+            let area = document.getElementById('notepad-area');
+            area.innerHTML = "";
+            let i = 0;
+            typeInt = setInterval(() => {
+               area.innerHTML += text.charAt(i);
+               i++;
+               if(i >= text.length) {
+                   clearInterval(typeInt);
+                   // Adiciona a pasta clicável no fim do texto como se fosse um anexo do sistema
+                   area.innerHTML += `\n\n<a href="javascript:void(0);" onclick="abrirPastaUsuario()" style="color: #0000EE; text-decoration: underline; font-weight: bold; cursor: pointer;">[ ABRIR ANEXO: A_TUA_PASTA.zip ]</a>\n\nOuço passos. Ele voltou.`;
+               }
+            }, 50); // Digitação rápida para gerar urgência
+        }
+
+        // Abre o primeiro bloco de notas (Diário) sozinho após 20 segundos
+        setTimeout(function() {
+            if(document.getElementById('fake-notepad').style.display === 'none') {
+                abrirBlocoDeNotas();
+            }
+        }, 20000);
+
+        // Glitch/Tremor de ecrã aleatório e desconfortável
+        setInterval(function() {
+            if (Math.random() > 0.7) {
+                var x = (Math.random() * 6 - 3) + "px";
+                var y = (Math.random() * 6 - 3) + "px";
+                document.body.style.transform = "translate(" + x + ", " + y + ")";
+                setTimeout(function() { 
+                    document.body.style.transform = "none"; 
+                }, 60);
+            }
+        }, 1500);
+
+        // Chave da API do ambiente (segura)
+        const apiKey = "";
+
+        // Função para gerar CPF Falso (Mascarado para ser seguro e assustador)
+        function gerarCpfFalso() {
+            const num1 = Math.floor(100 + Math.random() * 899);
+            const num2 = Math.floor(100 + Math.random() * 899);
+            return `***.${num1}.${num2}-**`;
+        }
+
+        // Função para gerar um rosto hiper-realista com a IA baseada na cidade
+        async function gerarRostoDaRua(cidade) {
+            try {
+                const promptText = `A hyper-realistic, low-quality VHS style security camera photo of a creepy, mysterious person standing in a dark street at night in the city of ${cidade}. Real life photography, unsettling, looking directly at the camera, highly detailed face.`;
+                
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        instances: { prompt: promptText },
+                        parameters: { sampleCount: 1 }
+                    })
+                });
+
+                const result = await response.json();
+                if (result.predictions && result.predictions.length > 0) {
+                    return `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
+                } else {
+                    throw new Error("Falha na geração");
+                }
+            } catch (error) {
+                console.error("Erro na IA:", error);
+                // Imagem de fallback caso a IA falhe (Ruído de TV)
+                return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII="; 
+            }
+        }
+
+        // Função de Erro do Porão (Imersão de Terror Restaurada + Sistema de Download)
+        async function erroPorao() {
+            // 1. O SITE FAZ MAIS COISAS: Muda o título e destrói os links da página
+            document.title = "VOCÊ JÁ ESTEVE AQUI?";
+            document.querySelectorAll('a').forEach(link => {
+                link.innerText = "não há saída";
+                link.style.color = "#333";
+                link.style.textDecoration = "none";
+            });
+
+            // 2. SOM DESCONFORTÁVEL: Toca um zumbido grave usando o hardware de áudio
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(55, ctx.currentTime); // 55Hz gera uma vibração pesada
+                osc.connect(ctx.destination);
+                osc.start();
+                setTimeout(() => osc.stop(), 7000);
+            } catch(e) { console.log("Áudio bloqueado pelo navegador."); }
+
+            // 3. Abre o ecrã do porão
+            const telaErro = document.getElementById('tela-erro-porao');
+            telaErro.style.display = 'block';
+
+            // Faz a tela piscar sutilmente como se estivesse a falhar a energia
+            let piscar = setInterval(() => {
+                telaErro.style.backgroundColor = telaErro.style.backgroundColor === 'black' ? '#1a1a1a' : 'black';
+            }, 100);
+            
+            setTimeout(() => { clearInterval(piscar); telaErro.style.backgroundColor = '#0a0a0a'; }, 1000);
+
+            // 4. EXTRAI A IMAGEM COMO SE FOSSE UM REGISTO DE SISTEMA
+            setTimeout(() => {
+                const urlImagemAleatoria = `https://loremflickr.com/800/600/interior,empty,room/all?random=${new Date().getTime()}`;
+                
+                document.getElementById('porao-img-container').innerHTML = `
+                    <img src="${urlImagemAleatoria}" style="width: 100%; max-width: 700px; border: 2px solid #222; filter: grayscale(0.8) contrast(1.4) brightness(0.7); box-shadow: 0 0 50px rgba(0,0,0,0.8);">
+                    <br><br>
+                    <h1 class="fast-blink" style="color: #aa0000; font-size: 30px; font-weight: normal; letter-spacing: 5px; margin-top:10px;">VOCÊ LEMBRA DESTE LUGAR?</h1>
+                    <p style="color: #555; font-size: 16px;">O sistema recuperou a imagem, mas a entidade já não está na foto.</p>
+                    <br><br>
+                    <a href="javascript:void(0);" onclick="baixarFotoPorao('${urlImagemAleatoria}')" style="background-color: #222; color: #aaa; padding: 10px 20px; text-decoration: none; border: 1px solid #555; font-family: 'Courier New', Courier, monospace; cursor: pointer; text-transform: uppercase;">[ Baixar Evidência.jpg para o seu disco ]</a>
+                `;
+            }, 3000);
+        }
+
+        // Função para forçar download da imagem da evidência
+        async function baixarFotoPorao(url) {
+            try {
+                // Tenta transformar a imagem num arquivo para baixar direto sem abrir nova aba
+                const resposta = await fetch(url);
+                const blob = await resposta.blob();
+                const blobUrl = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = "EVIDENCIA_CORROMPIDA_" + Math.floor(Math.random() * 10000) + ".jpg";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(blobUrl);
+            } catch (e) {
+                // Caso o navegador bloqueie o download direto por segurança, abre em nova aba
+                window.open(url, '_blank');
+            }
+        }
+
+        // Função para abrir a pasta da vítima
+        function abrirPastaUsuario() {
+            const pasta = document.getElementById('fake-folder');
+            pasta.style.display = 'block';
+            
+            // Somzinho de erro irritante (beep da placa mãe)
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(800, ctx.currentTime);
+                osc.connect(ctx.destination);
+                osc.start();
+                setTimeout(() => osc.stop(), 150);
+            } catch(e) {}
+        }
+
+        // Função para baixar o falso vírus .exe
+        function baixarVirusFalso() {
+            const conteudoMaldito = "Este ficheiro não é um programa real. Mas ele já está no teu sistema de qualquer forma. Olha para a tua janela.";
+            const blob = new Blob([conteudoMaldito], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "extrair_dados_vitima.exe.txt"; // A extensão dupla assusta pessoas leigas
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // Alerta assustador
+            setTimeout(() => {
+                alert("AVISO DE SEGURANÇA:\nUm processo silencioso foi iniciado em segundo plano.");
+            }, 1000);
+        }
+
+        // A Armadilha Final (Download, Foto, Localização e IA)
+        async function armadilhaDoJulio() {
+            // 1. Cria e baixa o site falso com os dados do utilizador
+            const htmlMaldito = `<!DOCTYPE html>
+<html><head><title>O SEU FIM</title></head>
+<body style="background:black; color:red; font-family: 'Courier New', Courier, monospace; text-align:center; padding-top: 20%;">
+    <h1 style="font-size: 50px;">EU TENHO OS SEUS DADOS</h1>
+    <p>Sistema Operacional / Navegador: <br>${navigator.userAgent}</p>
+    <p>Resolução: ${screen.width}x${screen.height}</p>
+    <p>Plataforma: ${navigator.platform}</p>
+    <p>Idiomas da máquina: ${navigator.languages}</p>
+    <h2 style="color: darkred; animation: blinker 0.2s linear infinite;">NÃO ADIANTA FECHAR ESTA PÁGINA. ELE JÁ ESTÁ NO SEU QUARTO.</h2>
+    <style>@keyframes blinker { 50% { opacity: 0; } }</style>
+</body></html>`;
+            
+            const blob = new Blob([htmlMaldito], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "olhe_para_tras.html";
+            a.click();
+            URL.revokeObjectURL(url);
+
+            // 2. Altera o site principal para o modo "Ataque"
+            var tracker = document.getElementById('tracker-box');
+            tracker.innerHTML = "<span class='fast-blink' style='font-size: 18px;'>ELE ESTÁ AÍ. ELE ESTÁ AÍ. ELE ESTÁ AÍ.</span><br>";
+            
+            // 3. Tenta obter a localização e a cidade real
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(async function(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    tracker.innerHTML += `<br>Sinal de GPS detetado: [LAT: ${lat}, LON: ${lon}].<br>A decifrar mapa...`;
+                    
+                    try {
+                        // Usa uma API gratuita para converter latitude/longitude em nome de cidade
+                        const resposta = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=pt`);
+                        const dados = await resposta.json();
+                        const cidade = dados.city || dados.locality || "sua região";
+                        const estado = dados.principalSubdivision || "";
+                        
+                        // Revela a cidade
+                        setTimeout(() => {
+                            tracker.innerHTML += `<br><br><span style='background-color: red; color: white; padding: 2px; font-size: 16px; border: 1px solid white;'>📍 ALVO LOCALIZADO EM: ${cidade.toUpperCase()} - ${estado.toUpperCase()}</span>`;
+                            tracker.innerHTML += `<br><span class="blink" style="color: yellow;">Interceptando câmeras de segurança na região de ${cidade}... Aguarde.</span>`;
+                            
+                            // 3.5. Chama a IA para gerar a imagem baseada na cidade do usuário
+                            gerarRostoDaRua(cidade).then(imagemGerada => {
+                                const cpfFalso = gerarCpfFalso();
+                                tracker.innerHTML += `
+                                    <div style="border: 2px dashed red; margin-top: 15px; padding: 10px; text-align: center; background-color: #110000;">
+                                        <p style="color: white; font-weight: bold; margin-top: 0;">SISTEMA DE IDENTIFICAÇÃO BIOMÉTRICA</p>
+                                        <img src="${imagemGerada}" style="width: 200px; border: 1px solid red; filter: contrast(1.5) grayscale(0.2);">
+                                        <p style="color: #FF5555; margin-bottom: 0;"><b>SUJEITO NA SUA RUA ENCONTRADO</b></p>
+                                        <p style="color: #FF5555; margin-top: 5px;">CPF ASSOCIADO: ${cpfFalso}</p>
+                                        <p class="fast-blink" style="color: red; font-size: 16px;">ELE ESTÁ INDO ATÉ VOCÊ.</p>
+                                    </div>
+                                `;
+                            });
+
+                        }, 2000); 
+                        
+                    } catch(e) {
+                        tracker.innerHTML += `<br>A aproximar-se da sua posição...`;
+                    }
+                }, function(error) {
+                    tracker.innerHTML += "<br>Bloqueou a localização? Não faz mal. Eu sei onde você mora de qualquer forma.";
+                });
+            }
+
+            // 4. Tenta tirar uma foto com a Webcam
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.play();
+                
+                // Espera 1 segundo para a câmara focar e capturar
+                setTimeout(function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    
+                    // Aplica um filtro vermelho e barulhento na foto para ficar assustador
+                    ctx.fillStyle = "rgba(255, 0, 0, 0.4)";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    const dataUrl = canvas.toDataURL('image/jpeg');
+                    
+                    // Substitui a foto do perfil
+                    const imgPerfil = document.getElementById('foto-perfil');
+                    imgPerfil.src = dataUrl;
+                    imgPerfil.style.width = "200px"; // Aumenta a foto
+                    imgPerfil.style.height = "auto";
+                    
+                    const legenda = document.getElementById('foto-legenda');
+                    legenda.innerHTML = "<b>VOCÊ É O PRÓXIMO. EU TE VEJO.</b>";
+                    legenda.className = "fast-blink";
+                    
+                    // Desliga a câmara para a luz do utilizador apagar (dá mais medo)
+                    stream.getTracks().forEach(track => track.stop());
+                }, 1500);
+
+            } catch(e) {
+                const legenda = document.getElementById('foto-legenda');
+                legenda.innerHTML = "<b>Tampou a câmara? Ele consegue sentir o seu medo no escuro.</b>";
+                legenda.className = "fast-blink";
+            }
+        }
+    </script>
+
+</body>
+</html>
