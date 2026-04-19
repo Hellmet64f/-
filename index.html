@@ -986,8 +986,8 @@
             document.getElementById('game-container').style.display = 'block';
 
             scene = new THREE.Scene();
-            // Nevoeiro denso e escuro para dar sensação de terror cego
-            scene.fog = new THREE.FogExp2(0x020202, 0.08); 
+            // Nevoeiro mais leve e com cor ligeiramente mais clara para permitir ver o mapa
+            scene.fog = new THREE.FogExp2(0x050505, 0.03); 
 
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             
@@ -1001,12 +1001,17 @@
             // Som de batimento cardíaco ambiente
             tocarBatimentoContinuo();
 
-            // Iluminação do cenário
-            const ambientLight = new THREE.AmbientLight(0x111111); // Luz ambiente quase nula
+            // Iluminação do cenário reforçada
+            const ambientLight = new THREE.AmbientLight(0x555555); // Luz ambiente mais forte para revelar detalhes
             scene.add(ambientLight);
+            
+            // Luz direcional suave para simular a lua iluminando as paredes
+            const moonLight = new THREE.DirectionalLight(0x667788, 0.6);
+            moonLight.position.set(20, 50, 20);
+            scene.add(moonLight);
 
-            // Lanterna acoplada ao jogador (câmara)
-            flashlight = new THREE.PointLight(0xffffee, 1, 20); // Luz da lanterna com alcance curto de 20 metros
+            // Lanterna acoplada ao jogador (câmara) muito mais forte e com maior alcance
+            flashlight = new THREE.PointLight(0xffffee, 2.5, 80); 
             camera.add(flashlight);
             scene.add(camera);
 
@@ -1086,11 +1091,11 @@
                 controls.moveRight(-velocity.x * delta);
                 controls.moveForward(-velocity.z * delta);
 
-                // Efeito de Lanterna a Falhar (Flicker)
+                // Efeito de Lanterna a Falhar (Flicker) ajustado para a nova luz
                 if (Math.random() > 0.96) {
-                    flashlight.intensity = 0.2 + Math.random() * 0.8; // Oscila entre luz fraca e forte
+                    flashlight.intensity = 0.5 + Math.random() * 1.5; // Oscila entre luz fraca e forte
                 } else {
-                    flashlight.intensity = 1.2;
+                    flashlight.intensity = 2.5; // Intensidade normal mais brilhante
                 }
             }
             prevTime = time;
