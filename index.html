@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso Remoto - Máquina do Júlio</title>
+    
+    <!-- Importar bibliotecas 3D (Three.js) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
+
+    <style>
+        /* Estilos do Sistema Operativo (Windows 95/98) */
+        body {
+            background-color: #008080;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Tahoma', sans-serif;
+            user-select: none;
+        }
+
+        /* Ícones do Ambiente de Trabalho */
+        .desktop-icons {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex-wrap: wrap;
+            max-height: 90vh;
+        }
+
+        .desktop-icon {
+            width: 75px;
+            text-align: center;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .desktop-icon img {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 5px;
+            filter: drop-shadow(1px 1px 0px black);
+        }
+
+        .desktop-icon:active span, .desktop-icon.selected .icon-label {
+            background-color: #000080;
+            border: 1px dotted white;
+            padding: 2px;
+            display: inline-block;
+        }
+
+        .icon-label { padding: 2px; display: inline-block; }
+
+        /* Estilo das Janelas do Sistema */
+        .win-window {
+            position: absolute;
+            background: #c0c0c0;
+            border-top: 2px solid #fff;
+            border-left: 2px solid #fff;
+            border-right: 2px solid #000;
+            border-bottom: 2px solid #000;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+            display: none; 
+        }
+
+        .win-header {
+            background: #000080;
+            color: white;
+            padding: 2px 4px;
+            font-family: 'Tahoma', sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: grab;
+        }
+
+        .win-header:active { cursor: grabbing; }
+
+        .win-close-btn {
+            background: #c0c0c0;
+            color: black;
+            border-top: 1px solid #fff;
+            border-left: 1px solid #fff;
+            border-right: 1px solid #000;
+            border-bottom: 1px solid #000;
+            font-weight: bold;
+            padding: 0 5px;
+            cursor: pointer;
+            font-family: sans-serif;
+        }
+
+        .win-close-btn:active {
+            border-top: 1px solid #000;
+            border-left: 1px solid #000;
+            border-right: 1px solid #fff;
+            border-bottom: 1px solid #fff;
+        }
+
+        .win-toolbar {
+            padding: 2px 5px;
+            font-family: 'Tahoma', sans-serif;
+            font-size: 12px;
+            color: black;
+            border-bottom: 1px solid #808080;
+            background: #c0c0c0;
+        }
+
+        .win-address-bar {
+            padding: 4px;
+            background: #c0c0c0;
+            border-bottom: 1px solid #808080;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .win-address-bar input {
+            flex-grow: 1;
+            margin-left: 5px;
+            font-family: monospace;
+            border-top: 2px solid #808080;
+            border-left: 2px solid #808080;
+            border-right: 2px solid #fff;
+            border-bottom: 2px solid #fff;
+            background: #fff;
+            color: #000;
+        }
+
+        /* Barra de Tarefas */
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            background: #c0c0c0;
+            border-top: 2px solid #fff;
+            display: flex;
+            align-items: center;
+            padding: 0 2px;
+            z-index: 99999;
+            box-sizing: border-box;
+        }
+
+        .start-btn {
+            font-weight: bold;
+            border-top: 2px solid #fff;
+            border-left: 2px solid #fff;
+            border-bottom: 2px solid #000;
+            border-right: 2px solid #000;
+            padding: 2px 6px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            background: #c0c0c0;
+            height: 22px;
+        }
+
+        .taskbar-clock {
+            border-top: 2px solid #808080;
+            border-left: 2px solid #808080;
+            border-bottom: 2px solid #fff;
+            border-right: 2px solid #fff;
+            padding: 2px 10px;
+            font-size: 11px;
+            margin-left: auto;
+            margin-right: 5px;
+        }
+
+        /* Menu Iniciar */
+        .start-menu {
+            position: fixed;
+            bottom: 30px;
+            left: 0;
+            background: #c0c0c0;
+            border-top: 2px solid #fff;
+            border-left: 2px solid #fff;
+            border-right: 2px solid #000;
+            border-bottom: 2px solid #000;
+            display: none; 
+            width: 220px;
+            z-index: 99999;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .start-menu-sidebar {
+            background: linear-gradient(to bottom, #000080, #1084d0);
+            color: white;
+            width: 35px;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            font-size: 16px;
+            letter-spacing: 2px;
+        }
+
+        .start-menu-items {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2px;
+            background: #c0c0c0;
+            color: black;
+        }
+
+        .start-menu-item {
+            padding: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .start-menu-item:hover { background: #000080; color: white; }
+
+        /* Estilo da Barra de Download */
+        .win-progress-bar-container {
+            border: 2px inset #fff;
+            background: #fff;
+            height: 20px;
+            margin: 10px 0;
+            position: relative;
+        }
+        .win-progress-bar {
+            background: #000080;
+            height: 100%;
+            width: 0%;
+        }
+
+        /* Navegador e Páginas */
+        .browser-container {
+            height: calc(100% - 105px); 
+            border-top: 2px solid #808080;
+            border-left: 2px solid #808080;
+            border-right: 2px solid #fff;
+            border-bottom: 2px solid #fff;
+            overflow-y: scroll;
+            user-select: text;
+            background: white;
+        }
+
+        #page-julio {
+            background-color: #000000;
+            background-image: repeating-linear-gradient(45deg, #050505 25%, transparent 25%, transparent 75%, #050505 75%, #050505), repeating-linear-gradient(45deg, #050505 25%, #000000 25%, #000000 75%, #050505 75%, #050505);
+            background-position: 0 0, 10px 10px;
+            background-size: 20px 20px;
+            color: #00FF00;
+            font-family: "Times New Roman", Times, serif;
+            cursor: crosshair;
+            min-height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #page-julio h1, #page-julio h2, #page-julio h3 { text-align: center; }
+        .blink { animation: blinker 0.8s linear infinite; }
+        .fast-blink { animation: blinker 0.2s linear infinite; color: #FF0000; }
+        @keyframes blinker { 50% { opacity: 0; } }
+        #page-julio a:link { color: #0000FF; text-decoration: underline; }
+        #page-julio a:visited { color: #800080; }
+        #page-julio table { margin-left: auto; margin-right: auto; background-color: #222; }
+        #page-julio hr { border: 0; border-top: 3px double #FF0000; margin: 20px 0; }
+        .hidden-text { color: #000000; font-size: 10px; }
+        .hidden-text:hover { color: #FF0000; }
+        .page-container { max-width: 800px; margin: 0 auto; border: 5px ridge #808080; padding: 15px; background-color: #0a0a0a; }
+        .tracker-box { border: 1px solid red; background-color: #330000; color: #FF0000; font-family: "Courier New", Courier, monospace; font-size: 12px; padding: 5px; margin: 10px auto; width: 80%; text-align: left; }
+    </style>
+</head>
+<body>
+
+    <!-- Ambiente de Trabalho (Ícones) -->
+    <div class="desktop-icons">
+        <div class="desktop-icon" onclick="selecionarIcone(this)" ondblclick="abrirJanela('fake-browser')">
+            <span style="font-size: 32px;">🌐</span><br>
+            <span class="icon-label">Netscape</span>
+        </div>
+        <div class="desktop-icon" onclick="selecionarIcone(this)" ondblclick="abrirPastaUsuario()">
+            <span style="font-size: 32px;">📁</span><br>
+            <span class="icon-label fast-blink" style="color: #FF00FF; font-weight: bold; background: black;">A_TUA_PASTA</span>
+        </div>
+        <div class="desktop-icon" onclick="selecionarIcone(this)" ondblclick="abrirBlocoDeNotas()">
+            <span style="font-size: 32px;">📝</span><br>
+            <span class="icon-label">Diário.txt</span>
+        </div>
+        <div class="desktop-icon" onclick="selecionarIcone(this)" ondblclick="abrirJanela('fake-settings')">
+            <span style="font-size: 32px;">⚙️</span><br>
+            <span class="icon-label">Config.</span>
+        </div>
+        <div class="desktop-icon" onclick="selecionarIcone(this)" ondblclick="abrirJanela('fake-trash')">
+            <span style="font-size: 32px;">🗑️</span><br>
+            <span class="icon-label">Lixeira</span>
+        </div>
+        <div class="desktop-icon" onclick="selecionarIcone(this)" ondblclick="iniciarDOS()">
+            <span style="font-size: 32px;">💻</span><br>
+            <span class="icon-label">MS-DOS</span>
+        </div>
+        <!-- Ícones Escondidos (Aparecem após download) -->
+        <div class="desktop-icon" id="icon-mirc" style="display: none;" onclick="selecionarIcone(this)" ondblclick="abrirJanela('fake-mirc')">
+            <span style="font-size: 32px;">💬</span><br>
+            <span class="icon-label">mIRC32</span>
+        </div>
+        <div class="desktop-icon" id="icon-cleaner" style="display: none;" onclick="selecionarIcone(this)" ondblclick="iniciarLimpezaRegisto()">
+            <span style="font-size: 32px;">🧹</span><br>
+            <span class="icon-label">Limpador</span>
+        </div>
+    </div>
+
+    <!-- JANELA 1: O Navegador Web -->
+    <div id="fake-browser" class="win-window" style="width: 85%; height: 85%; top: 5%; left: 5%; display: block;">
+        <div id="fake-browserheader" class="win-header">
+            <span>Netscape Navigator - A Explorar a World Wide Web</span>
+            <button class="win-close-btn" onclick="document.getElementById('fake-browser').style.display='none'">X</button>
+        </div>
+        <div class="win-toolbar">
+            <u>F</u>icheiro &nbsp;&nbsp; <u>E</u>ditar &nbsp;&nbsp; <u>V</u>er &nbsp;&nbsp; <u>I</u>r &nbsp;&nbsp; <u>B</u>ookmarks &nbsp;&nbsp; <u>O</u>pções &nbsp;&nbsp; A<u>j</u>uda
+        </div>
+        <div class="win-address-bar">
+            Endereço: <input type="text" id="url-input" value="http://www.geocities.com/julio_1998/index.html" readonly>
+        </div>
+        <div style="background: #c0c0c0; border-bottom: 1px solid #808080; padding: 6px; font-size: 13px; display: flex; gap: 20px; font-family: 'Tahoma', sans-serif;">
+            <b>Meus Favoritos:</b>
+            <a href="javascript:void(0)" onclick="navegarPara('julio')" style="color: #0000EE; font-weight: bold;">[Página do Júlio]</a>
+            <a href="javascript:void(0)" onclick="navegarPara('news')" style="color: #0000EE; font-weight: bold;">[Jornal Local]</a>
+            <a href="javascript:void(0)" onclick="navegarPara('store')" style="color: #0000EE; font-weight: bold;">[WebMercado 99]</a>
+            <a href="javascript:void(0)" onclick="navegarPara('downloads')" style="color: #0000EE; font-weight: bold;">[SuperDownloads]</a>
+            <a href="javascript:void(0)" onclick="navegarPara('missing')" style="color: #aa0000; font-weight: bold;">[Desaparecidos]</a>
+        </div>
+        
+        <div class="browser-container" id="browser-container">
+            
+            <!-- SITE 1: PÁGINA DO JÚLIO -->
+            <div id="page-julio" style="display:block;">
+                <marquee scrollamount="15" bgcolor="#FF0000" style="color: #FFFF00; font-size: 24px; font-weight: bold; font-family: Arial;">
+                    !!! BEM-VINDO À MINHA HOME PAGE !!! VOCÊ É O VISITANTE NÚMERO 00666 !!!
+                </marquee>
+
+                <div class="page-container">
+                    <div class="tracker-box" id="tracker-box">
+                        [SISTEMA DE SEGURANÇA ATIVADO] A estabelecer ligação...<br>
+                    </div>
+
+                    <h1 class="blink" style="color: #FFFF00; font-size: 40px; margin-top: 10px;">~~ O Canto da Web do Júlio ~~</h1>
+                    <center><p style="font-size: 12px;">Melhor visualizado no Netscape Navigator 3.0, resolução 800x600</p></center>
+
+                    <div style="display: block; margin: 0 auto; text-align: center; background-color: yellow; color: black; font-weight: bold; font-family: Arial, sans-serif; padding: 5px; width: 300px; border: 3px dashed black;">
+                        🚧 ATENÇÃO 🚧<br>PÁGINA EM ETERNA CONSTRUÇÃO
+                    </div>
+
+                    <hr>
+
+                    <p>Olá, navegante da <i>World Wide Web</i>!</p>
+                    <p>Meu nome é Júlio. Eu fiz essa página usando o bloco de notas para aprender HTML e partilhar os meus passatempos com o mundo.</p>
+
+                    <table border="4" cellpadding="10" bordercolor="#00FF00" width="80%">
+                        <tr>
+                            <td align="center" bgcolor="#000000">
+                                <img id="foto-perfil" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="[Imagem Quebrada]" style="width: 100px; height: 100px; border: 1px solid red;"><br>
+                                <small><i id="foto-legenda">(A minha foto não quer carregar. O rosto ficou borrado na revelação de novo.)</i></small>
+                            </td>
+                            <td valign="top">
+                                <h3 style="margin-top:0; color: #00FFFF;">O que vai encontrar aqui:</h3>
+                                <ul>
+                                    <li><a href="#hobbies">Os Meus Hobbies Normais</a></li>
+                                    <li><a href="#fotos">Fotos da Vizinhança</a></li>
+                                    <li><a href="javascript:void(0);" onclick="erroPorao()" style="color: darkred;"><s>O Porão</s></a> (NÃO CLIQUE)</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <hr>
+
+                    <h2 id="pensamentos" style="color: #FF8800;">Pensamentos Recentes (Diário Público)</h2>
+                    <p><b>10/11/1998</b> - O Leo acha que eu estou maluco. Ele não entende que as janelas do Windows não são seguras. Elas têm olhos. Eu tapei a minha webcam com fita isolante, mas acho que <i>ele</i> consegue ver através do próprio monitor.</p>
+                    <p><b>08/11/1998</b> - Encomendei cadeados novos na loja WebMercado 99. Também comprei um livro sobre sistemas alternativos. Código aberto é a única saída. Se ele tomar o meu Windows, eu fujo para outro sistema.</p>
+                    <p><b>05/11/1998</b> - A casa do número 45 está vazia. A polícia diz que eles viajaram. Mentira. Eu vi o carro deles ser engolido pela neblina naquela madrugada. Eles foram consumidos.</p>
+
+                    <hr>
+
+                    <h2 id="fotos">Registos de Observação</h2>
+                    <p>Eu passo bastante tempo na minha janela. É importante saber quem entra e quem sai da rua. Eu anoto tudo num caderno.</p>
+                    
+                    <table border="2" cellpadding="5" cellspacing="2" bordercolor="red" width="100%">
+                        <tr bgcolor="#440000"><th>Nome do Vizinho</th><th>Casa</th><th>Status</th></tr>
+                        <tr><td>Dona Lurdes</td><td>Nº 12</td><td>Segura</td></tr>
+                        <tr><td>Marcos Silva</td><td>Nº 28</td><td>Seguro</td></tr>
+                        <tr><td>Família Pereira</td><td>Nº 45</td><td><b>DESAPARECIDOS</b></td></tr>
+                        <tr><td>Você</td><td>Atrás da tela</td><td class="fast-blink">O PRÓXIMO</td></tr>
+                    </table>
+
+                    <hr>
+
+                    <center>
+                        <h3 style="background-color: #000080; color: white; display:inline-block; padding: 5px;">Assine o meu Livro de Visitas!</h3>
+                        <div style="background-color: #000080; color: white; padding: 10px; border: 2px solid white; text-align: center; width: 60%; margin: 20px auto;">
+                            <form action="#" method="get" onsubmit="return false;">
+                                Nome: <input type="text" size="20" style="background-color: black; color: green; border: 1px solid green;"><br><br>
+                                O que achou do site?<br>
+                                <textarea id="creepy-area" rows="4" cols="30" style="background-color: black; color: green; border: 1px solid green;" onfocus="possuirTexto()"></textarea><br><br>
+                                <input type="button" value="Enviar para o Júlio" onclick="armadilhaDoJulio()">
+                            </form>
+                        </div>
+                    </center>
+                </div>
+            </div>
+
+            <!-- SITE 2: NOTÍCIAS DA CIDADE REAL -->
+            <div id="page-news" style="display:none; background:white; color:black; min-height:100%; padding:30px; font-family: 'Times New Roman', serif; box-sizing: border-box;">
+                <h1 style="border-bottom: 3px solid black; padding-bottom: 10px; margin-top: 0; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 40px;">📰</span> O Correio da Manhã - Web
+                </h1>
+                <p style="text-align: right; font-style: italic; color: #555;">Última atualização: Hoje.</p>
+                
+                <h2 style="color: darkred; font-size: 28px;">ALERTA: ACIDENTE GRAVE ENVOLVENDO DESAPARECIDOS EM <span id="news-city" class="fast-blink">A VERIFICAR LOCALIZAÇÃO...</span></h2>
+                
+                <p style="font-size: 18px; line-height: 1.6;"><b>Notícia de última hora:</b> As autoridades reportaram um acidente misterioso nas proximidades do centro da sua cidade.</p>
+                <p style="font-size: 18px; line-height: 1.6;">Um veículo contendo pertences da família Pereira, recentemente dada como desaparecida, foi encontrado abandonado. O mais perturbador é que todas as fotografias dentro do carro tinham os rostos das vítimas recortados metodicamente com uma tesoura.</p>
+                
+                <div style="border: 1px solid black; padding: 15px; background: #eee; color: black; display: inline-block; margin-top: 15px;">
+                     <img src="https://loremflickr.com/500/350/accident,car/all" style="filter: grayscale(1) contrast(1.2); border: 1px solid #333;" alt="Acidente" />
+                </div>
+            </div>
+
+            <!-- SITE 3: WEBMERCADO 99 -->
+            <div id="page-store" style="display:none; background:#ffffff; color:#000; min-height:100%; padding:30px; font-family: Arial, sans-serif; box-sizing: border-box;">
+                <h1 style="color: blue; text-align: center; border-bottom: 2px solid blue; padding-bottom: 10px;">🛒 WebMercado 99</h1>
+                <p style="text-align: center; font-style: italic; font-size: 14px; color: #666;">A sua loja de conveniência na SuperVia da Informação!</p>
+                <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 30px;">
+                    <div style="border: 1px solid #ccc; padding: 15px; display: flex; gap: 20px; align-items: center; background: #f9f9f9;">
+                        <div style="width: 80px; height: 80px; background: #eee; display:flex; align-items:center; justify-content:center; font-size:40px;">🔒</div>
+                        <div style="flex-grow: 1;">
+                            <h3 style="margin:0;">Kit 5 Cadeados Reforçados</h3>
+                            <p style="color: red; margin: 0; font-weight: bold;">[ ESGOTADO ]</p>
+                            <p style="font-size: 12px; color: #666; margin-top: 5px;"><i>Último comprador: J. Almeida - "Preciso de trancar a porta do porão por fora."</i></p>
+                        </div>
+                    </div>
+                    <div style="border: 1px solid #ccc; padding: 15px; display: flex; gap: 20px; align-items: center; background: #f9f9f9;">
+                        <div style="width: 80px; height: 80px; background: #eee; display:flex; align-items:center; justify-content:center; font-size:40px;">🐧</div>
+                        <div style="flex-grow: 1;">
+                            <h3 style="margin:0;">Livro: O Guia do Linux para Paranóicos</h3>
+                            <p style="color: red; margin: 0; font-weight: bold;">[ ESGOTADO ]</p>
+                            <p style="font-size: 12px; color: #666; margin-top: 5px;"><i>Último comprador: J. Almeida - "O Windows tem olhos. A salvação é o DAUL."</i></p>
+                        </div>
+                    </div>
+                    <div style="border: 1px solid #ccc; padding: 15px; display: flex; gap: 20px; align-items: center; background: #ffeeee; border-color: red;">
+                        <div style="width: 80px; height: 80px; background: #000; display:flex; align-items:center; justify-content:center; font-size:40px; filter: grayscale(1);">👁️</div>
+                        <div style="flex-grow: 1;">
+                            <h3 style="margin:0; color: darkred;">Webcam OptiView 98 (Sem fios)</h3>
+                            <p style="color: green; margin: 5px 0;"><b>Preço: A sua privacidade</b></p>
+                            <p style="font-size: 13px; color: black; font-weight: bold;">A encomenda já foi entregue.</p>
+                            <button onclick="iniciarWebcamApp()" style="cursor:pointer; color:red; font-weight:bold; padding: 5px 15px; margin-top: 5px;">Verificar Câmera</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SITE 4: DOWNLOADS -->
+            <div id="page-downloads" style="display:none; background:#000080; color:white; min-height:100%; padding:30px; font-family: 'Tahoma', sans-serif; box-sizing: border-box;">
+                <h1 style="color: yellow; text-shadow: 2px 2px black; font-size: 32px; text-align: center;">⬇️ SuperDownloads 98 ⬇️</h1>
+                <p style="text-align: center; font-size: 16px;">O maior acervo de shareware e freeware da internet mundial!</p>
+                <hr style="border: 0; border-bottom: 2px solid white; margin-bottom: 30px;">
+                
+                <div style="background: #0000aa; padding: 20px; border: 2px ridge #ffffff; margin-top: 20px;">
+                    <h3 style="margin-top: 0; color: #00ffff; font-size: 22px;">🌐 mIRC - Bate-Papo com Amigos.exe (1.2 MB)</h3>
+                    <p>Conecte-se com os seus amigos através da rede. Seguro, rápido e com salas de conversação privadas.</p>
+                    <button onclick="iniciarDownloadMirc()" style="background: #c0c0c0; color: black; font-weight: bold; padding: 8px 20px; cursor: pointer; border: 2px outset #fff; margin-top: 10px;">Baixar para o PC</button>
+                </div>
+
+                <div style="background: #0000aa; padding: 20px; border: 2px ridge #ffffff; margin-top: 20px;">
+                    <h3 style="margin-top: 0; color: #aaaaaa; font-size: 22px;">🧹 Limpador de Registo.exe (500 KB)</h3>
+                    <p style="color: #ccc;">O seu PC está lento? Alguém o está a observar pelos registos? Tente limpar tudo!</p>
+                    <button onclick="iniciarDownloadLimpador()" style="background: #c0c0c0; color: black; font-weight: bold; padding: 8px 20px; cursor: pointer; border: 2px outset #fff; margin-top: 10px;">Baixar Limpador</button>
+                </div>
+
+                <div style="background: #0000aa; padding: 20px; border: 2px ridge #ffffff; margin-top: 20px;">
+                    <h3 style="margin-top: 0; color: #00ff00; font-size: 22px;">🛡️ DAUL.api - Ferramenta de Recuperação (14 KB)</h3>
+                    <p>Ficheiro de sistema encriptado. Executar <b>apenas</b> no MS-DOS.</p>
+                    <button onclick="baixarDAUL()" style="background: #c0c0c0; color: black; font-weight: bold; padding: 8px 20px; cursor: pointer; border: 2px outset #fff; margin-top: 10px;">Baixar DAUL.api</button>
+                </div>
+            </div>
+
+            <!-- SITE 5: LORE - PESSOAS DESAPARECIDAS -->
+            <div id="page-missing" style="display:none; background:black; color:white; min-height:100%; padding:30px; font-family: 'Courier New', monospace; box-sizing: border-box;">
+                <h1 style="color: red; text-align: center; font-size: 40px; text-transform: uppercase;">Atenção: Pessoas Desaparecidas</h1>
+                <hr style="border-top: 1px dashed red;">
+                <div style="text-align: center; margin-top: 30px;">
+                    <img src="https://randomuser.me/api/portraits/men/82.jpg" style="width: 150px; border: 2px solid white; filter: grayscale(1);" alt="Júlio">
+                    <h2 style="color: yellow;">JÚLIO ALMEIDA</h2>
+                    <p><b>Idade:</b> 19 anos | <b>Desaparecido há:</b> 4 meses.</p>
+                    <div style="border: 1px solid #555; padding: 15px; margin: 20px auto; max-width: 600px; text-align: left; background: #111;">
+                        <p>O Júlio não é visto desde Novembro de 1998.</p>
+                        <p>A polícia invadiu a casa dele e encontrou-a completamente vazia. Não havia roupas, nem móveis, apenas o computador dele ligado no chão, a exibir uma página web bizarra com um fundo preto e verde.</p>
+                        <p style="color: red; font-weight: bold;">Se estás a ler o site do Júlio agora... O Júlio não está aí. Aquele não é o Júlio. Fecha o computador imediatamente.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JANELAS DO SISTEMA FALSO -->
+
+    <!-- JANELA DE DOWNLOAD Genérica -->
+    <div id="fake-download" class="win-window" style="width: 350px; top: 30%; left: 35%; color: black; z-index: 9999;">
+        <div id="fake-downloadheader" class="win-header">
+            <span id="download-title">A Transferir Ficheiro...</span>
+        </div>
+        <div style="padding: 15px; background: #c0c0c0; font-family: 'Tahoma', sans-serif; font-size: 12px;">
+            <p style="margin-top:0;" id="download-nome">A guardar ficheiro...</p>
+            <p>Destino: C:\Windows\Transferencias</p>
+            <div class="win-progress-bar-container">
+                <div id="download-progress" class="win-progress-bar"></div>
+            </div>
+            <p id="download-status">A transferir: 0% concluído</p>
+        </div>
+    </div>
+
+    <!-- APP WEBCAM (Nova Funcionalidade) -->
+    <div id="fake-webcam" class="win-window" style="width: 340px; top: 10%; left: 60%; color: black; background:#c0c0c0;">
+        <div id="fake-webcamheader" class="win-header">
+            <span>👁️ OptiView 98 - Monitorização</span>
+            <button class="win-close-btn" onclick="desligarWebcamApp()">X</button>
+        </div>
+        <div style="padding:5px; background:black; text-align:center;">
+            <video id="webcam-video" width="320" height="240" autoplay style="border: 2px inset #fff; filter: contrast(1.3) sepia(0.8) hue-rotate(300deg); transform: scaleX(-1);"></video>
+            <div class="fast-blink" style="color:red; font-family:'Courier New', monospace; font-weight:bold; margin-top:5px; padding: 5px;">A TRANSMITIR PARA: J. ALMEIDA (IP OCULTO)</div>
+        </div>
+    </div>
+
+    <!-- APP LIMPADOR DE REGISTO (Nova Funcionalidade) -->
+    <div id="fake-cleaner" class="win-window" style="width: 400px; top: 35%; left: 40%; color: black;">
+        <div id="fake-cleanerheader" class="win-header">
+            <span>🧹 Limpador de Registo.exe</span>
+            <button class="win-close-btn" onclick="document.getElementById('fake-cleaner').style.display='none'">X</button>
+        </div>
+        <div style="padding: 15px; background: #c0c0c0; font-family: 'Tahoma', sans-serif; font-size: 12px;">
+            <div style="display:flex; align-items:center; gap: 15px; margin-bottom:15px;">
+                <span style="font-size: 40px;">🧹</span>
+                <div>
+                    <h3 style="margin:0;">Limpador de Registo v2.0</h3>
+                    <p style="margin:0;">A analisar anomalias no sistema...</p>
+                </div>
+            </div>
+            <div class="win-progress-bar-container">
+                <div id="cleaner-progress" class="win-progress-bar"></div>
+            </div>
+            <div id="cleaner-log" style="background: white; border: 2px inset #fff; height: 100px; overflow-y: auto; padding: 5px; font-family: 'Courier New', monospace; margin-top: 10px;">
+                A aguardar início...
+            </div>
+        </div>
+    </div>
+
+    <!-- APP AJUDA DO WINDOWS (Nova Funcionalidade) -->
+    <div id="fake-help" class="win-window" style="width: 350px; top: 15%; left: 55%; color: black;">
+        <div id="fake-helpheader" class="win-header">
+            <span>❓ Ajuda do Windows</span>
+            <button class="win-close-btn" onclick="document.getElementById('fake-help').style.display='none'">X</button>
+        </div>
+        <div class="win-toolbar">
+            <u>O</u>cultar &nbsp;&nbsp; <u>A</u>nterior &nbsp;&nbsp; <u>F</u>rente &nbsp;&nbsp; <u>O</u>pções
+        </div>
+        <div style="display: flex; height: 250px; background: #c0c0c0;">
+            <div style="width: 130px; background: white; border: 2px inset #fff; margin: 5px; padding: 5px; overflow-y: auto; font-family: 'Tahoma', sans-serif; font-size: 12px;">
+                <b>Tópicos:</b>
+                <ul style="padding-left: 15px; margin-top: 5px;">
+                    <li style="cursor: pointer; color: blue; text-decoration: underline; margin-bottom: 5px;" onclick="mostrarAjuda(1)">O que fazer?</li>
+                    <li style="cursor: pointer; color: blue; text-decoration: underline; margin-bottom: 5px;" onclick="mostrarAjuda(2)">Eles observam</li>
+                    <li style="cursor: pointer; color: blue; text-decoration: underline; margin-bottom: 5px;" onclick="mostrarAjuda(3)">Sair</li>
+                </ul>
+            </div>
+            <div id="help-content" style="flex-grow: 1; background: #ffffcc; border: 2px inset #fff; margin: 5px 5px 5px 0; padding: 10px; font-family: 'Times New Roman', serif; font-size: 14px; overflow-y: auto;">
+                Clique num tópico à esquerda para obter ajuda.
+            </div>
+        </div>
+    </div>
+
+    <!-- JANELA 2: Falso Bloco de Notas -->
+    <div id="fake-notepad" class="win-window" style="width: 450px; height: 350px; top: 20%; left: 30%;">
+        <div id="fake-notepadheader" class="win-header">
+            <span>📝 diario.txt - Bloco de Notas</span>
+            <button class="win-close-btn" onclick="document.getElementById('fake-notepad').style.display='none'">X</button>
+        </div>
+        <div class="win-toolbar">
+            <u>F</u>icheiro &nbsp;&nbsp; <u>E</u>ditar &nbsp;&nbsp; <u>P</u>esquisar &nbsp;&nbsp; A<u>j</u>uda
+        </div>
+        <div id="notepad-area" style="width: 100%; height: calc(100% - 46px); background: white; color: black; font-family: 'Courier New', Courier, monospace; font-size: 14px; padding: 5px; box-sizing: border-box; overflow-y: auto; white-space: pre-wrap; border-top: 2px solid #808080; border-left: 2px solid #808080; border-right: 2px solid #fff; border-bottom: 2px solid #fff;"></div>
+    </div>
+
+    <!-- JANELA 3: Falsa Pasta do Windows (A_TUA_PASTA) -->
+    <div id="fake-folder" class="win-window" style="width: 450px; top: 15%; left: 40%; color: black;">
+        <div id="fake-folderheader" class="win-header">
+            <span>📁 C:\Oculto\Vitimas\ALVO_ATUAL</span>
+            <button class="win-close-btn" onclick="document.getElementById('fake-folder').style.display='none'">X</button>
+        </div>
+        <div class="win-toolbar">
+            <u>F</u>icheiro &nbsp;&nbsp; <u>E</u>ditar &nbsp;&nbsp; <u>V</u>er &nbsp;&nbsp; A<u>j</u>uda
+        </div>
+        <div style="padding: 10px; font-family: 'Tahoma', sans-serif; font-size: 14px; background: white; height: 250px; overflow-y: scroll; border-top: 2px solid #808080; border-left: 2px solid #808080;">
+            <ul style="list-style-type: none; padding: 0; margin: 0;">
+                <li style="margin-bottom: 15px; cursor: pointer; display: flex; align-items: center;" onclick="alert('ERRO: O ficheiro está a ser usado por outro processo.\n\nELE ESTÁ A VER ESTA FOTO AGORA MESMO.')">
+                    <img src="https://randomuser.me/api/portraits/women/68.jpg" style="width: 45px; height: 45px; margin-right: 10px; border: 1px solid black; filter: sepia(1) hue-rotate(320deg) brightness(0.6) contrast(1.5);" alt="Rosto"> 
+                    <span><b>dona_lurdes_n12.jpg</b><br><small style="color: gray;">Modificado: Hoje, 03:14 AM</small></span>
+                </li>
+                <li style="margin-bottom: 15px; cursor: pointer; display: flex; align-items: center;" onclick="alert('ACESSO NEGADO. ELE AINDA ESTÁ NA CASA Nº 28.')">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" style="width: 45px; height: 45px; margin-right: 10px; border: 1px solid black; filter: sepia(1) hue-rotate(320deg) brightness(0.6) contrast(1.5);" alt="Rosto"> 
+                    <span><b>marcos_silva_n28.jpg</b><br><small style="color: gray;">Modificado: Hoje, 04:22 AM</small></span>
+                </li>
+                <li style="margin-bottom: 15px; cursor: pointer; display: flex; align-items: center;" onclick="alert('FICHEIRO CORROMPIDO.\n\nEles gritaram muito. O áudio foi apagado.')">
+                    <span style="font-size: 24px; margin-right: 10px;">📁</span> 
+                    <span><b>familia_pereira_n45_DESAPARECIDOS.zip</b><br><small style="color: red; font-weight: bold;">Modificado: Onde eles estão?</small></span>
+                </li>
+                <li style="margin-bottom: 15px; cursor: pointer; display: flex; align-items: center; color: red; font-weight: bold;" onclick="abrirBlocoDeNotas('Eu avisei-te para não mexeres nas pastas dele.\n\nAgora ele sabe que tu descobriste.\n\nFoge enquanto podes.')">
+                    <span style="font-size: 24px; margin-right: 10px;">⚠️</span> 
+                    <span><b>LER_ISTO_AGORA.txt</b><br><small style="color: gray;">Modificado: AGORA</small></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- JANELA 3B: Pasta de Programas -->
+    <div id="fake-programas" class="win-window" style="width: 400px; top: 20%; left: 10%; color: black;">
+        <div id="fake-programasheader" class="win-header">
+            <span>📁 C:\WINDOWS\Menu Iniciar\Programas</span>
+            <button class="win-close-btn" onclick="document.getElementById('fake-programas').style.display='none'">X</button>
+        </div>
+        <div class="win-toolbar">
+            <u>F</u>icheiro &nbsp;&nbsp; <u>E</u>ditar &nbsp;&nbsp; <u>V</u>er &nbsp;&nbsp; A<u>j</u>uda
+        </div>
+        <div style="padding: 10px; font-family: 'Tahoma', sans-serif; font-size: 14px; background: white; height: 200px; overflow-y: scroll; border-top: 2px solid #808080; border-left: 2px solid #808080;">
+            <ul style="list-style-type: none; padding: 0; margin: 0; display:flex; gap:20px; flex-wrap:wrap;">
+                <li style="text-align: center; cursor: pointer; width: 60px;" onclick="abrirBlocoDeNotas('Não tens programas. O computador é dele agora.')">
+                    <span style="font-size: 32px;">🗂️</span><br><span style="font-size: 11px;">Tudo_Me_Pertence</span>
+                </li>
+                <li style="text-align: center; cursor: pointer; width: 60px;" onclick="abrirBlocoDeNotas('A tua alma está a ser formatada.')">
+                    <span style="font-size: 32px;">💾</span><br><span style="font-size: 11px;">Formatar_Alma.exe</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- JANELA 4: Configurações do Sistema -->
+    <div id="fake-settings" class="win-window" style="width: 320px; top: 25%; left: 35%; color: black;">
+        <div id="fake-settingsheader" class="win-header">
+            <span>⚙️ Propriedades de Ecrã e Sistema</span>
+            <button class="win-close-btn" onclick="document.getElementById('fake-settings').style.display='none'">X</button>
+        </div>
+        <div style="padding: 20px; font-family: 'Tahoma', sans-serif; font-size: 13px; background: #c0c0c0;">
+            <p style="margin-top: 0;"><b>Alterar Fundo de Ecrã:</b></p>
+            <button onclick="document.body.style.backgroundColor = '#008080'" style="background: #ddd; border: 2px outset #fff; padding: 5px; cursor: pointer;">Padrão (Teal)</button>
+            <button onclick="document.body.style.backgroundColor = 'black'" style="background: black; color: white; border: 2px outset #fff; padding: 5px; cursor: pointer;">Preto Vazio</button>
+            <button onclick="mudarFundoSangue()" style="background: #aa0000; color: white; border: 2px outset #fff; padding: 5px; cursor: pointer;">Vermelho Sangue</button>
+            <br><br>
+            <hr style="border: 0; border-top: 1px solid #808080; border-bottom: 1px solid #fff;">
+            <br>
+            <p style="margin-top: 0;"><b>Privacidade do Utilizador:</b></p>
+            
+            <!-- Checkbox de privacidade interativa e assustadora -->
+            <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
+                <input type="checkbox" id="cam-checkbox" checked onchange="forcarCameraAtiva(this)">
+                Permitir acesso à Câmara e Microfone
+            </label>
+            <p id="cam-warning" style="color:red; font-weight:bold; display:none; font-size:11px;">A ENTIDADE DISSE NÃO.</p>
+        </div>
+    </div>
+
+    <!-- JANELA 5: O Novo mIRC Chat -->
+    <div id="fake-mirc" class="win-window" style="width: 500px; height: 350px; top: 20%; left: 25%; color: black;">
+        <div id="fake-mircheader" class="win-header">
+            <span>💬 mIRC32 - [#sala_oculta]</span>
+            <button class="win-close-btn" onclick="document.getElementById('fake-mirc').style.display='none'">X</button>
+        </div>
+        <div class="win-toolbar" style="display: flex; gap: 15px;">
+            <span style="cursor:pointer"><u>F</u>ile</span>
+            <span style="cursor:pointer"><u>V</u>iew</span>
+            <span style="cursor:pointer" onclick="abrirLogLeo()" class="fast-blink" style="color: darkred; font-weight: bold; background: white; padding: 0 4px; border: 1px solid darkred;" title="Abrir Registos Antigos">[📁 Histórico: LEO]</span>
+            <span style="cursor:pointer"><u>H</u>elp</span>
+        </div>
+        <div style="display: flex; height: calc(100% - 80px); padding: 5px; gap: 5px; background: #c0c0c0;">
+            <div id="mirc-chat-area" style="flex-grow: 1; background: white; border-top: 2px solid #808080; border-left: 2px solid #808080; border-right: 2px solid #fff; border-bottom: 2px solid #fff; padding: 5px; font-family: 'Courier New', monospace; font-size: 13px; overflow-y: scroll;">
+                <!-- O chat aparece aqui -->
+            </div>
+            <div style="width: 120px; background: white; border-top: 2px solid #808080; border-left: 2px solid #808080; border-right: 2px solid #fff; border-bottom: 2px solid #fff; padding: 5px; font-family: 'Courier New', monospace; font-size: 12px; overflow-y: scroll;">
+                <b style="color: red;">@Entidade</b><br>
+                Visitante_03<br>
+                Visitante_09<br>
+                <span id="mirc-user-name" style="color: blue; display: none; font-weight: bold;"></span>
+            </div>
+        </div>
+        <div style="padding: 5px; display: flex; background: #c0c0c0;">
+            <input type="text" id="mirc-input" style="flex-grow: 1; border-top: 2px solid #808080; border-left: 2px solid #808080; border-right: 2px solid #fff; border-bottom: 2px solid #fff; font-family: 'Courier New'; padding: 3px;" disabled placeholder="A ligar ao servidor...">
+            <button onclick="enviarMensagemMirc()" style="margin-left: 5px; font-weight: bold; border-top: 2px solid #fff; border-left: 2px solid #fff; border-right: 2px solid #000; border-bottom: 2px solid #000; cursor: pointer;">Enviar</button>
+        </div>
+    </div>
+
+    <!-- JANELA 6: A Lixeira -->
+    <div id="fake-trash" class="win-window" style="width: 450px; top: 15%; left: 40%; color: black;">
+        <div id="fake-trashheader" class="win-header">
+            <span>🗑️ C:\WINDOWS\Lixeira</span>
+            <button class="win-close-btn" onclick="document.getElementById('fake-trash').style.display='none'">X</button>
+        </div>
+        <div class="win-toolbar">
+            <u>F</u>icheiro &nbsp;&nbsp; <u>E</u>ditar &nbsp;&nbsp; <u>V</u>er &nbsp;&nbsp; A<u>j</u>uda
+        </div>
+        <div style="padding: 10px; font-family: 'Tahoma', sans-serif; font-size: 14px; background: white; height: 250px; overflow-y: scroll; border-top: 2px solid #808080; border-left: 2px solid #808080;">
+            <ul style="list-style-type: none; padding: 0; margin: 0; display: flex; gap: 20px; flex-wrap: wrap;">
+                <li style="text-align: center; cursor: pointer; width: 80px;" onclick="verFotoMaldita('o_que_sobrou.jpg', 1)">
+                    <span style="font-size: 40px; filter: grayscale(1);">🖼️</span><br>
+                    <span style="font-size: 12px; word-wrap: break-word;">o_que_sobrou.jpg</span>
+                </li>
+                <li style="text-align: center; cursor: pointer; width: 80px;" onclick="verFotoMaldita('nao_olhe.bmp', 2)">
+                    <span style="font-size: 40px; filter: grayscale(1);">🖼️</span><br>
+                    <span style="font-size: 12px; word-wrap: break-word;">nao_olhe.bmp</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- JANELA 7: Visualizador de Imagens -->
+    <div id="fake-viewer" class="win-window" style="width: 450px; top: 25%; left: 30%; color: black;">
+        <div id="fake-viewerheader" class="win-header">
+            <span id="viewer-title">Visualizador de Imagens</span>
+            <button class="win-close-btn" onclick="document.getElementById('fake-viewer').style.display='none'">X</button>
+        </div>
+        <div style="padding: 10px; background: #c0c0c0; text-align: center;">
+            <img id="viewer-img" src="" style="width: 100%; border: 2px solid #808080; filter: contrast(1.5) grayscale(0.8) sepia(0.3); background: black; min-height: 250px;">
+            <p id="viewer-desc" style="font-family: 'Tahoma', sans-serif; font-size: 13px; font-weight: bold; color: #440000; margin-top: 10px;"></p>
+        </div>
+    </div>
+
+    <!-- JANELA 8: O MS-DOS INTERATIVO -->
+    <div id="fake-dos" class="win-window" style="width: 500px; height: 350px; top: 20%; left: 20%; background: black; color: #00ff00;">
+        <div id="fake-dosheader" class="win-header">
+            <span>💻 MS-DOS Prompt</span>
+            <button class="win-close-btn" onclick="document.getElementById('fake-dos').style.display='none'">X</button>
+        </div>
+        <div id="dos-area" style="padding: 10px 10px 0 10px; font-family: 'Courier New', monospace; font-size: 14px; overflow-y: auto; height: calc(100% - 50px); box-sizing: border-box; white-space: pre-wrap;">Microsoft(R) Windows 98
+   (C)Copyright Microsoft Corp 1981-1999.
+
+</div>
+        <div style="display: flex; padding: 0 10px 10px 10px; font-family: 'Courier New', monospace; font-size: 14px; background: black; color: #00ff00;">
+            <span>C:\WINDOWS>&nbsp;</span>
+            <input type="text" id="dos-input" autocomplete="off" style="background: transparent; border: none; color: #00ff00; font-family: 'Courier New', monospace; font-size: 14px; outline: none; flex-grow: 1;">
+        </div>
+    </div>
+
+    <!-- Ecrã Azul da Morte (BSOD) -->
+    <div id="bsod-screen" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #0000AA; color: #FFF; font-family: 'Courier New', Courier, monospace; z-index: 9999999; padding: 50px; box-sizing: border-box; cursor: none;">
+        <p style="background: white; color: #0000AA; display: inline-block; padding: 2px 10px; font-weight: bold;">Windows</p>
+        <br><br>
+        <p>Um erro fatal 0E ocorreu em 0028:C0011E36 no VXD VMM(01) + 00010E36.</p>
+        <p>A aplicação atual será terminada.</p>
+        <br>
+        <p>* Pressione qualquer tecla para tentar reiniciar o computador.</p>
+        <p>* Você perderá qualquer informação não guardada nas aplicações abertas.</p>
+        <br>
+        <p style="color: #FF5555; font-weight: bold;">A ENTIDADE TOMOU O CONTROLO DO SISTEMA.</p>
+        <p style="color: #FF5555; font-weight: bold;">NÃO ADIANTA DESLIGAR A FICHA. ELE JÁ ESTÁ NO SEU QUARTO.</p>
+        <br><br>
+        <p style="text-align: center;" class="blink">Pressione qualquer tecla para continuar _</p>
+    </div>
+
+    <!-- Sequência de Boot (BIOS Falsa) -->
+    <div id="boot-screen" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; color: #a8a8a8; font-family: 'Courier New', monospace; font-size: 16px; z-index: 99999999; padding: 20px; box-sizing: border-box; cursor: none;">
+        <p>Award Modular BIOS v4.51PG, An Energy Star Ally</p>
+        <p>Copyright (C) 1984-1998, Award Software, Inc.</p>
+        <br>
+        <div id="boot-text"></div>
+    </div>
+
+    <!-- O LINUX SALVADOR (LORE DO JÚLIO) -->
+    <div id="linux-screen" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; color: #fff; font-family: 'Courier New', Courier, monospace; z-index: 99999999; padding: 20px; box-sizing: border-box; overflow-y: auto;">
+        <div id="linux-text"></div>
+    </div>
+
+    <!-- UI E JOGO 3D FINAL OVERLAY (A Ligação) -->
+    <div id="game-start-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; color:red; z-index:999999999; justify-content:center; align-items:center; flex-direction:column; cursor:pointer;">
+        <h1 class="fast-blink" style="font-family: 'Courier New', monospace; text-align:center; font-size:40px;">A LIGAÇÃO ESTÁ FEITA.</h1>
+        <p style="font-family: 'Courier New', monospace; font-size:20px; color:#aaa;">CLIQUE EM QUALQUER LUGAR PARA ABRIR OS OLHOS.</p>
+        <p style="font-family: 'Courier New', monospace; font-size:14px; color:#555; margin-top: 50px;">Use W A S D para andar. O rato para olhar. SHIFT para correr.</p>
+    </div>
+    
+    <!-- UI do Jogo 3D -->
+    <div id="game-ui" style="display:none; position:fixed; top:20px; left:20px; color:red; font-family: 'Courier New', monospace; font-size:18px; z-index:999999999; text-shadow: 1px 1px 0 #000;">
+        OBJETIVO: Encontre a casa vermelha (Siga a luz).<br>
+        [SHIFT] para correr.
+    </div>
+
+    <!-- JOGO 3D FINAL CONTAINER -->
+    <div id="game-container" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:999999998;">
+        <!-- Mira do jogo -->
+        <div style="position:absolute; top:50%; left:50%; width:4px; height:4px; background:rgba(255,255,255,0.5); transform:translate(-50%,-50%); border-radius:50%; z-index: 10;"></div>
+    </div>
+
+    <!-- Menu Iniciar -->
+    <div id="start-menu" class="start-menu">
+        <div class="start-menu-sidebar">
+            <span>Windows 98</span>
+        </div>
+        <div class="start-menu-items">
+            <div class="start-menu-item" onclick="abrirJanela('fake-programas')"><span>📁</span> Programas</div>
+            <div class="start-menu-item" onclick="abrirPastaUsuario()"><span>📂</span> Documentos (A_TUA_PASTA)</div>
+            <div class="start-menu-item" onclick="abrirJanela('fake-settings')"><span>⚙️</span> Configurações</div>
+            <div class="start-menu-item" onclick="abrirJanela('fake-help')"><span>❓</span> Ajuda</div>
+            <hr style="margin: 2px 0; border: 0; border-top: 1px solid #808080; border-bottom: 1px solid #fff;">
+            <div class="start-menu-item" onclick="acionarBSOD()"><span>🔌</span> Desligar...</div>
+        </div>
+    </div>
+
+    <!-- Barra de Tarefas -->
+    <div class="taskbar">
+        <div class="start-btn" onclick="toggleStartMenu(event)">
+            <span style="font-size: 16px; margin-right: 5px;">🪟</span> Iniciar
+        </div>
+        <div style="flex-grow: 1;"></div>
+        <div class="taskbar-clock" id="taskbar-time">
+            10:40 AM
+        </div>
+    </div>
+
+    <script>
+        // Variável Global do DAUL.api
+        let hasDAUL = false;
+
+        // --- NAVEGAÇÃO ENTRE SITES NO BROWSER FALSO ---
+        function navegarPara(idPagina) {
+            document.getElementById('page-julio').style.display = 'none';
+            document.getElementById('page-news').style.display = 'none';
+            document.getElementById('page-downloads').style.display = 'none';
+            document.getElementById('page-missing').style.display = 'none';
+            document.getElementById('page-store').style.display = 'none';
+            
+            const urlInput = document.getElementById('url-input');
+
+            if(idPagina === 'julio') {
+                document.getElementById('page-julio').style.display = 'block';
+                urlInput.value = "http://www.geocities.com/julio_1998/index.html";
+            } else if(idPagina === 'news') {
+                document.getElementById('page-news').style.display = 'block';
+                urlInput.value = "http://www.correio-da-manha.pt/noticias/local/acidente";
+                carregarNoticiaLocal(); 
+            } else if(idPagina === 'store') {
+                document.getElementById('page-store').style.display = 'block';
+                urlInput.value = "http://www.webmercado99.com.br/catalogo";
+            } else if(idPagina === 'downloads') {
+                document.getElementById('page-downloads').style.display = 'block';
+                urlInput.value = "http://www.superdownloads98.com/software/rede";
+            } else if(idPagina === 'missing') {
+                document.getElementById('page-missing').style.display = 'block';
+                urlInput.value = "http://www.policia-civil.gov/desaparecidos/julio-almeida";
+            }
+        }
+
+        // --- GPS E NOTÍCIAS ---
+        function carregarNoticiaLocal() {
+            const citySpan = document.getElementById('news-city');
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(async function(position) {
+                    try {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        const resposta = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=pt`);
+                        const dados = await resposta.json();
+                        const cidade = dados.city || dados.locality || "AMITYVILLE, EUA";
+                        citySpan.innerText = cidade.toUpperCase();
+                        citySpan.style.color = "red";
+                    } catch(e) {
+                        citySpan.innerText = "AMITYVILLE, EUA";
+                    }
+                }, function() {
+                    citySpan.innerText = "AMITYVILLE, EUA"; 
+                });
+            } else {
+                citySpan.innerText = "AMITYVILLE, EUA";
+            }
+        }
+
+        // --- VISUALIZADOR DE FOTOS ASSOMBRADAS ---
+        function verFotoMaldita(nome, tipo) {
+            abrirJanela('fake-viewer');
+            document.getElementById('viewer-title').innerText = "A Visualizar: " + nome;
+            
+            let imgViewer = document.getElementById('viewer-img');
+            let descViewer = document.getElementById('viewer-desc');
+            
+            if(tipo === 1) {
+                imgViewer.src = `https://loremflickr.com/400/400/creepy,dark?lock=666`;
+                descViewer.innerText = "Esta foto foi encontrada no registo apagado. Não sabemos o que é aquilo no fundo escuro.";
+            } else if(tipo === 2) {
+                imgViewer.src = `https://loremflickr.com/400/400/abandoned,room?lock=13`;
+                descViewer.innerText = "A porta estava trancada por dentro. Como é que a entidade conseguiu entrar?";
+            } else if(tipo === 4) {
+                imgViewer.src = `https://loremflickr.com/500/400/basement,creepy?lock=999`;
+                descViewer.innerText = "O Porão. Foi aqui que tudo começou. Há manchas no chão e correntes quebradas.";
+            }
+        }
+
+        // --- SISTEMA DE DOWNLOAD GENÉRICO ---
+        function iniciarDownload(nomeFicheiro, mensagemSucesso, callback) {
+            abrirJanela('fake-download');
+            let progress = 0;
+            const bar = document.getElementById('download-progress');
+            const status = document.getElementById('download-status');
+            
+            document.getElementById('fake-downloadheader').innerHTML = `<span>A Transferir ${nomeFicheiro}...</span>`;
+            document.getElementById('download-nome').innerHTML = `A guardar: <b>${nomeFicheiro}</b>`;
+            bar.style.width = '0%';
+            
+            let interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 15) + 5;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    status.innerText = "Transferência concluída.";
+                    setTimeout(() => {
+                        document.getElementById('fake-download').style.display = 'none';
+                        if(mensagemSucesso) alert(mensagemSucesso);
+                        if(callback) callback();
+                    }, 1000);
+                }
+                bar.style.width = progress + '%';
+                status.innerText = `A transferir: ${progress}% concluído`;
+            }, 500);
+        }
+
+        function iniciarDownloadMirc() {
+            iniciarDownload('mIRC32_setup.exe', "Download concluído.\nO ícone do mIRC32 foi adicionado ao seu Ambiente de Trabalho.", () => {
+                document.getElementById('icon-mirc').style.display = 'flex'; 
+            });
+        }
+        
+        function iniciarDownloadLimpador() {
+            iniciarDownload('Limpador_Registo.exe', "Download concluído.\nO ícone do Limpador foi adicionado ao seu Ambiente de Trabalho.", () => {
+                document.getElementById('icon-cleaner').style.display = 'flex'; 
+            });
+        }
+
+        function baixarDAUL() {
+            iniciarDownload('DAUL.api', "Aviso de Segurança: Ficheiro crítico do sistema.\nDAUL.api foi guardado em C:\\WINDOWS\\", () => {
+                hasDAUL = true;
+            });
+        }
+
+        // --- APLICATIVOS (WEBCAM E LIMPADOR) ---
+        let webcamStream = null;
+        async function iniciarWebcamApp() {
+            abrirJanela('fake-webcam');
+            const video = document.getElementById('webcam-video');
+            try {
+                webcamStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = webcamStream;
+            } catch(e) {
+                // Se bloquear a cam, mostra estática
+                video.outerHTML = "<div style='width:320px; height:240px; background:repeating-radial-gradient(circle, black, #333 10%); display:flex; align-items:center; justify-content:center; color:red; font-weight:bold;'>SINAL PERDIDO. ELE AINDA VÊ.</div>";
+            }
+        }
+        function desligarWebcamApp() {
+            document.getElementById('fake-webcam').style.display = 'none';
+            if(webcamStream) {
+                webcamStream.getTracks().forEach(track => track.stop());
+                webcamStream = null;
+            }
+        }
+
+        function iniciarLimpezaRegisto() {
+            abrirJanela('fake-cleaner');
+            let progress = 0;
+            const bar = document.getElementById('cleaner-progress');
+            const log = document.getElementById('cleaner-log');
+            log.innerHTML = "A iniciar verificação profunda...<br>";
+            bar.style.width = '0%';
+            
+            let scanInt = setInterval(() => {
+                progress += 10;
+                bar.style.width = progress + '%';
+                
+                if(progress === 30) log.innerHTML += "A verificar C:\\WINDOWS\\System32... OK<br>";
+                if(progress === 60) {
+                    log.innerHTML += "<span style='color:darkred;'>ANOMALIA ENCONTRADA. Entidade não mapeada detetada no Registo.</span><br>";
+                    log.scrollTop = log.scrollHeight;
+                }
+                if(progress === 90) {
+                    log.innerHTML += "A tentar remover ficheiros corrompidos...<br>";
+                    log.scrollTop = log.scrollHeight;
+                }
+                if(progress >= 100) {
+                    clearInterval(scanInt);
+                    bar.style.background = 'red';
+                    log.innerHTML += "<br><span class='fast-blink' style='color:red; font-weight:bold; font-size:16px;'>ACESSO NEGADO. NÃO ME PODES APAGAR.</span><br>";
+                    log.scrollTop = log.scrollHeight;
+                    tocarSomErroGrave();
+                }
+            }, 800);
+        }
+
+        // --- SISTEMA DE AJUDA E PRIVACIDADE ---
+        function mostrarAjuda(id) {
+            const content = document.getElementById('help-content');
+            if(id === 1) content.innerHTML = "<h2 style='margin-top:0'>O que fazer?</h2><p>Não há nada que possa ser feito. Quando a ligação é estabelecida, o seu endereço IP torna-se parte do tecido da rede dele.</p><p>Sugestão: Desligue o monitor e reze para que não venham pela janela.</p>";
+            if(id === 2) content.innerHTML = "<h2 style='margin-top:0'>Eles observam</h2><p>As câmaras são apenas portas de duas vias. Você olha para o mundo digital, mas o mundo digital também olha para si.</p>";
+            if(id === 3) content.innerHTML = "<h2 style='margin-top:0'>Sair</h2><p class='fast-blink' style='color:red; font-size:30px; font-weight:bold;'>NÃO HÁ SAÍDA.</p>";
+        }
+
+        function forcarCameraAtiva(checkbox) {
+            if(!checkbox.checked) {
+                document.getElementById('cam-warning').style.display = 'block';
+                tocarSomErroGrave();
+                setTimeout(() => {
+                    checkbox.checked = true; // Fantasma liga de volta
+                    document.getElementById('cam-warning').style.display = 'none';
+                }, 1500);
+            }
+        }
+
+
+        // --- O TERMINAL MS-DOS INTERATIVO ---
+        function iniciarDOS() {
+            abrirJanela('fake-dos');
+            document.getElementById('dos-input').focus();
+        }
+
+        document.getElementById('dos-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const cmd = this.value.trim().toLowerCase();
+                const dosArea = document.getElementById('dos-area');
+                dosArea.innerHTML += `C:\\WINDOWS> ${this.value}\n`;
+                this.value = '';
+                
+                if (cmd === 'dir') {
+                    dosArea.innerHTML += "\n O volume na unidade C é SISTEMA_CORROMPIDO\n O Número de Série do Volume é 6666-1998\n\n Pasta de C:\\WINDOWS\n\n";
+                    dosArea.innerHTML += "SYSTEM       <DIR>      11-03-98  10:12\n";
+                    dosArea.innerHTML += "Oculto       <DIR>      12-11-98  03:33\n";
+                    dosArea.innerHTML += "Lixeira      <DIR>      12-11-98  04:00\n";
+                    if (hasDAUL) {
+                        dosArea.innerHTML += "DAUL     API     14.024 17-04-26  03:00\n";
+                    }
+                    dosArea.innerHTML += "\n";
+                } else if (cmd === 'help') {
+                    dosArea.innerHTML += "\nComandos disponíveis: DIR, CLS, HELP, EXIT\n";
+                } else if (cmd === 'cls') {
+                    dosArea.innerHTML = "";
+                } else if (cmd === 'exit') {
+                    document.getElementById('fake-dos').style.display = 'none';
+                } else if (cmd === 'daul.api' || cmd === 'run daul.api' || cmd === 'daul') {
+                    if (hasDAUL) {
+                        dosArea.innerHTML += "\nIniciando Protocolo de Contenção DAUL...\nExtraindo pacote Linux...\nDesativando Entidade... [FALHOU]\nForçando Reboot do sistema hospedeiro...\n";
+                        setTimeout(iniciarLinux, 3000);
+                    } else {
+                        dosArea.innerHTML += "\nComando ou nome de ficheiro inválido.\n";
+                    }
+                } else if (cmd !== '') {
+                    dosArea.innerHTML += "\nComando ou nome de ficheiro inválido.\n";
+                }
+                dosArea.scrollTop = dosArea.scrollHeight;
+            }
+        });
+
+        // --- LINUX REBOOT SEQUENCE E TRANSIÇÃO PARA JOGO 3D ---
+        function iniciarLinux() {
+            document.querySelector('.desktop-icons').style.display = 'none';
+            document.querySelector('.taskbar').style.display = 'none';
+            document.querySelectorAll('.win-window').forEach(w => w.style.display = 'none');
+            document.body.style.backgroundColor = "black";
+            
+            const bootScreen = document.getElementById('boot-screen');
+            bootScreen.style.display = 'block';
+            document.getElementById('boot-text').innerHTML = "Loading DAUL Recovery Image...<br>Bypassing Entity Containment... <span style='color:green'>OK</span><br>";
+            
+            setTimeout(() => {
+                bootScreen.style.display = 'none';
+                const linuxScreen = document.getElementById('linux-screen');
+                linuxScreen.style.display = 'block';
+                
+                const linuxLog = [
+                    "[ <span style='color:green'>OK</span> ] Started DAUL Core System.",
+                    "[ <span style='color:green'>OK</span> ] Mounting safe filesystem...",
+                    "[ <span style='color:yellow'>WARN</span> ] Windows partition heavily infected. Do not mount.",
+                    "Loading user context...",
+                    "Logging in as: Julio_Admin",
+                    "<br>=================================================",
+                    "<b>DAUL TERMINAL v1.0 - SECURE SHELL</b>",
+                    "=================================================<br>",
+                    "<b>> cat verdade.txt</b>",
+                    "Olá. Sou o Júlio.",
+                    "Se estás a ler isto, descarregaste o DAUL.api e conseguiste sair do Windows 98.",
+                    "Aquele site, o mIRC, as pastas... é tudo uma ilusão. Uma teia de aranha.",
+                    "A 'Entidade' infetou o meu computador há meses. Ela alimenta-se da curiosidade.",
+                    "Eu não desapareci como diz o jornal. Para sobreviver, tive de compilar a minha própria consciência e escondê-la neste sistema Linux (DAUL).",
+                    "A Entidade controla o Windows, mas não domina o Linux.",
+                    "Não voltes. Ela está furiosa por teres escapado do ambiente gráfico dela.",
+                    "Fecha a aba do teu navegador agora. É a única forma de cor-",
+                    "<br><span style='color:red; font-size:24px; font-weight:bold;'>TU ACHAS QUE ESTÁS SEGURO AQUI?</span>",
+                    "<span style='color:red; font-size:24px; font-weight:bold;'>O LINUX NÃO TE VAI PROTEGER DE MIM. EU SOU A MÁQUINA. E A CASA ESTÁ À TUA ESPERA.</span>"
+                ];
+
+                let i = 0;
+                const linuxText = document.getElementById('linux-text');
+                let linuxInt = setInterval(() => {
+                    if(i < linuxLog.length) {
+                        linuxText.innerHTML += linuxLog[i] + "<br>";
+                        linuxScreen.scrollTop = linuxScreen.scrollHeight;
+                        
+                        if(linuxLog[i].includes("color:red")) tocarSomErroGrave();
+                        
+                        i++;
+                    } else {
+                        clearInterval(linuxInt);
+                        setTimeout(() => {
+                            linuxScreen.innerHTML = "<h1 class='fast-blink' style='color:red; text-align:center; font-size: 50px; margin-top:20%'>SISTEMA CORROMPIDO.</h1>";
+                            tocarSomErroGrave();
+                            
+                            // Em vez de recarregar a página, abre o jogo 3D!
+                            setTimeout(() => {
+                                document.getElementById('linux-screen').style.display = 'none';
+                                document.getElementById('game-start-overlay').style.display = 'flex';
+                            }, 3500); 
+                        }, 4000);
+                    }
+                }, 1500);
+            }, 3000);
+        }
+
+        function tocarSomErroGrave() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(50, ctx.currentTime);
+                osc.connect(ctx.destination);
+                osc.start();
+                setTimeout(() => osc.stop(), 800);
+            } catch(e) {}
+        }
+
+
+        // --- O JOGO 3D DE TERROR (THREE.JS) ---
+        let scene, camera, renderer, controls;
+        let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false, isRunning = false;
+        let prevTime = performance.now();
+        let velocity = new THREE.Vector3();
+        let direction = new THREE.Vector3();
+        let flashlight;
+        let gameStarted = false;
+        
+        let currentMapScene;
+        let arrowMesh;
+        let targetLight;
+        let gameLevel = 1;
+        let targetPosition = new THREE.Vector3(30, 2, -30); // Posição alvo (a casa)
+
+        document.getElementById('game-start-overlay').addEventListener('click', function() {
+            if(!gameStarted) {
+                gameStarted = true;
+                iniciarJogo3D();
+            } else if (controls) {
+                controls.lock(); 
+            }
+        });
+
+        function iniciarJogo3D() {
+            document.getElementById('game-start-overlay').style.display = 'none';
+            document.getElementById('game-container').style.display = 'block';
+            document.getElementById('game-ui').style.display = 'block';
+
+            scene = new THREE.Scene();
+            // Nevoeiro mais claro para permitir ver o mapa melhor
+            scene.fog = new THREE.FogExp2(0x050505, 0.03); 
+
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('game-container').appendChild(renderer.domElement);
+
+            controls = new THREE.PointerLockControls(camera, document.body);
+            controls.lock();
+
+            tocarBatimentoContinuo();
+
+            // Iluminação do cenário (Mais visível)
+            const ambientLight = new THREE.AmbientLight(0x555555); 
+            scene.add(ambientLight);
+            
+            const moonLight = new THREE.DirectionalLight(0x667788, 0.6);
+            moonLight.position.set(20, 50, 20);
+            scene.add(moonLight);
+
+            // Lanterna (Mais forte)
+            flashlight = new THREE.PointLight(0xffffee, 2.5, 80); 
+            camera.add(flashlight);
+            scene.add(camera);
+
+            // Carregamento do MAPA INICIAL
+            const loader = new THREE.GLTFLoader();
+            loader.load('horror_map.glb', function(gltf) {
+                currentMapScene = gltf.scene;
+                
+                // ESCALAR O MAPA para o jogador não ser "gigante"
+                currentMapScene.scale.set(15, 15, 15); 
+                
+                // Centralizar e colocar o chão no Y=0
+                const box = new THREE.Box3().setFromObject(currentMapScene);
+                const center = box.getCenter(new THREE.Vector3());
+                currentMapScene.position.x = -center.x;
+                currentMapScene.position.z = -center.z;
+                currentMapScene.position.y = -box.min.y; 
+                
+                scene.add(currentMapScene);
+                
+                criarAlvoCasa();
+            }, undefined, function(error) {
+                console.error("Erro a carregar o mapa GLB:", error);
+                // Fallback caso o ficheiro não esteja lá
+                const roomGeometry = new THREE.BoxGeometry( 100, 10, 100 );
+                const roomMaterial = new THREE.MeshStandardMaterial( {color: 0x333333, side: THREE.BackSide} );
+                currentMapScene = new THREE.Mesh( roomGeometry, roomMaterial );
+                scene.add(currentMapScene);
+                criarAlvoCasa();
+            });
+            
+            camera.position.set(0, 3, 0); // Altura realística do jogador
+
+            // Controlos de Movimento e CORRIDA (Shift)
+            const onKeyDown = function (event) {
+                switch (event.code) {
+                    case 'ArrowUp': case 'KeyW': moveForward = true; break;
+                    case 'ArrowLeft': case 'KeyA': moveLeft = true; break;
+                    case 'ArrowDown': case 'KeyS': moveBackward = true; break;
+                    case 'ArrowRight': case 'KeyD': moveRight = true; break;
+                    case 'ShiftLeft': case 'ShiftRight': isRunning = true; break;
+                }
+            };
+            const onKeyUp = function (event) {
+                switch (event.code) {
+                    case 'ArrowUp': case 'KeyW': moveForward = false; break;
+                    case 'ArrowLeft': case 'KeyA': moveLeft = false; break;
+                    case 'ArrowDown': case 'KeyS': moveBackward = false; break;
+                    case 'ArrowRight': case 'KeyD': moveRight = false; break;
+                    case 'ShiftLeft': case 'ShiftRight': isRunning = false; break;
+                }
+            };
+            document.addEventListener('keydown', onKeyDown);
+            document.addEventListener('keyup', onKeyUp);
+
+            window.addEventListener('resize', function() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            animarJogo3D();
+        }
+
+        function criarAlvoCasa() {
+            // Seta Vermelha Indicadora
+            const geometry = new THREE.ConeGeometry( 1.5, 4, 8 );
+            const material = new THREE.MeshBasicMaterial( {color: 0xff0000} );
+            arrowMesh = new THREE.Mesh( geometry, material );
+            
+            arrowMesh.position.copy(targetPosition);
+            arrowMesh.position.y += 5; // Flutuar acima da casa
+            arrowMesh.rotation.x = Math.PI; // Apontar para baixo
+            scene.add( arrowMesh );
+
+            // Luz Vermelha Forte da Casa
+            targetLight = new THREE.PointLight(0xff0000, 5, 40);
+            targetLight.position.copy(targetPosition);
+            targetLight.position.y = 3;
+            scene.add(targetLight);
+        }
+
+        function loadHospitalMap() {
+            // Remove o mapa antigo e a seta da casa
+            if(currentMapScene) scene.remove(currentMapScene);
+            if(arrowMesh) scene.remove(arrowMesh);
+            if(targetLight) scene.remove(targetLight);
+            
+            document.getElementById('game-ui').innerHTML = "OBJETIVO: Sobreviva ao Hospital.<br>Não há saída.";
+            
+            const overlay = document.getElementById('game-start-overlay');
+            overlay.style.display = 'flex';
+            overlay.innerHTML = "<h1 class='fast-blink' style='color:red; font-size:50px;'>A PORTA TRANCOU-SE SOZINHA.</h1>";
+            controls.unlock();
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                controls.lock();
+            }, 3000);
+
+            // Carrega a Fase 2: the_hospital_2_of_4.glb
+            const loader = new THREE.GLTFLoader();
+            loader.load('the_hospital_2_of_4.glb', function(gltf) {
+                currentMapScene = gltf.scene;
+                currentMapScene.scale.set(10, 10, 10); // Ajusta tamanho do hospital
+                
+                const box = new THREE.Box3().setFromObject(currentMapScene);
+                const center = box.getCenter(new THREE.Vector3());
+                currentMapScene.position.x = -center.x;
+                currentMapScene.position.z = -center.z;
+                currentMapScene.position.y = -box.min.y;
+
+                scene.add(currentMapScene);
+                
+                // Atmosfera mais assustadora (Hospital de sangue)
+                scene.fog.color.setHex(0x110000); 
+                scene.fog.density = 0.04;
+                camera.position.set(0, 3, 0);
+            });
+        }
+
+        function animarJogo3D() {
+            requestAnimationFrame(animarJogo3D);
+            const time = performance.now();
+            
+            if (controls.isLocked === true) {
+                const delta = (time - prevTime) / 1000;
+                
+                // Fricção
+                velocity.x -= velocity.x * 10.0 * delta;
+                velocity.z -= velocity.z * 10.0 * delta;
+
+                direction.z = Number(moveForward) - Number(moveBackward);
+                direction.x = Number(moveRight) - Number(moveLeft);
+                direction.normalize(); 
+
+                // VELOCIDADE: Se shift estiver pressionado, corre muito mais rápido!
+                const speed = isRunning ? 70.0 : 25.0; 
+                
+                if (moveForward || moveBackward) velocity.z -= direction.z * speed * delta;
+                if (moveLeft || moveRight) velocity.x -= direction.x * speed * delta;
+
+                controls.moveRight(-velocity.x * delta);
+                controls.moveForward(-velocity.z * delta);
+                
+                // Força a câmara a ficar sempre à mesma altura para o jogador não voar nem cair
+                camera.position.y = 3.0;
+
+                // Anima a Seta flutuante (Girar e subir/descer)
+                if (arrowMesh && gameLevel === 1) {
+                    arrowMesh.position.y = targetPosition.y + 6 + Math.sin(time / 300) * 1;
+                    arrowMesh.rotation.y += 0.02;
+                    
+                    // LÓGICA DE ENTRAR NA CASA (Mudar de Mapa)
+                    const distToHouse = camera.position.distanceTo(new THREE.Vector3(targetPosition.x, 3.0, targetPosition.z));
+                    if (distToHouse < 5.0) {
+                        gameLevel = 2; // Aciona o nível 2
+                        loadHospitalMap();
+                    }
+                }
+
+                // Lanterna Flicker (Mais visível no escuro)
+                if (Math.random() > 0.96) {
+                    flashlight.intensity = 0.5 + Math.random() * 1.5; 
+                } else {
+                    flashlight.intensity = 2.5; 
+                }
+            }
+            prevTime = time;
+            renderer.render(scene, camera);
+        }
+
+        function tocarBatimentoContinuo() {
+            setInterval(() => {
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const osc = ctx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(40, ctx.currentTime); 
+                    osc.connect(ctx.destination);
+                    osc.start();
+                    setTimeout(() => osc.stop(), 200);
+                } catch(e) {}
+            }, 1000); 
+        }
+
+        // --- SISTEMA PERSISTENTE DO MIRC E RESTO DAS LÓGICAS DO OS ---
+        let mircState = {
+            loggedIn: false,
+            username: "",
+            history: [],
+            inputDisabled: true,
+            placeholder: "A ligar ao servidor..."
+        };
+
+        const forcedMessage = "Sou um rapaz de 17 anos, não sabia que ainda tinha pessoas online neste app.";
+        let forcedMessageIndex = 0;
+
+        function addMircMessage(html) {
+            const chatArea = document.getElementById('mirc-chat-area');
+            chatArea.innerHTML += html;
+            mircState.history.push(html);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function handleMircInput(event) {
+            if (event.key === 'Enter') {
+                enviarMensagemMirc();
+                event.preventDefault();
+                return;
+            }
+            event.preventDefault(); 
+            const inputField = document.getElementById('mirc-input');
+            if (event.key === 'Backspace') {
+                inputField.value = inputField.value.slice(0, -1);
+                if(forcedMessageIndex > 0) forcedMessageIndex--;
+            } else if (event.key.length === 1) { 
+                if (forcedMessageIndex < forcedMessage.length) {
+                    inputField.value += forcedMessage[forcedMessageIndex]; 
+                    forcedMessageIndex++;
+                }
+            }
+        }
+
+        function enviarMensagemMirc() {
+            const inputField = document.getElementById('mirc-input');
+            const msg = inputField.value.trim();
+            if (msg.length > 0) {
+                addMircMessage(`<div><b style="color: blue;">&lt;${mircState.username}&gt;</b> ${msg}</div>`);
+                inputField.value = "";
+                forcedMessageIndex = 0;
+                setTimeout(respostaDaEntidade, 1500);
+            }
+        }
+
+        function iniciarMirc() {
+            const chatArea = document.getElementById('mirc-chat-area');
+            const inputField = document.getElementById('mirc-input');
+            const userNameDisplay = document.getElementById('mirc-user-name');
+            
+            if (mircState.loggedIn) {
+                chatArea.innerHTML = mircState.history.join("");
+                userNameDisplay.style.display = 'block';
+                userNameDisplay.innerText = mircState.username;
+                inputField.disabled = mircState.inputDisabled;
+                inputField.placeholder = mircState.placeholder;
+                inputField.onkeydown = handleMircInput;
+                chatArea.scrollTop = chatArea.scrollHeight;
+                return;
+            }
+
+            chatArea.innerHTML = "";
+            userNameDisplay.style.display = 'none';
+            inputField.disabled = true;
+            inputField.value = "";
+            inputField.placeholder = "A ligar ao servidor...";
+
+            const randomID = Math.floor(Math.random() * 9000) + 1000;
+            mircState.username = "Alvo_" + randomID;
+
+            const mensagensDeLigacao = [
+                "* Ligando a irc.underground-net.org (6667)",
+                "* Ligação estabelecida. Verificando a tua identidade...",
+                "* Bem-vindo ao mIRC! A gerar credenciais automáticas...",
+                `* O teu nome de utilizador foi definido como ${mircState.username}`,
+                "* A entrar no canal oculto #sala_oculta...",
+                "<br><b style='color:green;'>--- Entraste no canal #sala_oculta ---</b><br>",
+                "<b style='color:black;'>SISTEMA: Digite uma mensagem de saudação.</b><br>"
+            ];
+            
+            let delay = 0;
+            mensagensDeLigacao.forEach(msg => {
+                setTimeout(() => {
+                    addMircMessage(`<div style="color: #555;">${msg}</div>`);
+                }, delay += 800);
+            });
+
+            setTimeout(() => {
+                mircState.loggedIn = true;
+                userNameDisplay.style.display = 'block';
+                userNameDisplay.innerText = mircState.username;
+                mircState.placeholder = "Escreva aqui (Experimente digitar qualquer coisa)...";
+                inputField.placeholder = mircState.placeholder;
+                mircState.inputDisabled = false;
+                inputField.disabled = false;
+                inputField.focus();
+                inputField.onkeydown = handleMircInput;
+            }, delay);
+        }
+
+        function abrirLogLeo() {
+            const logTexto = "--- INÍCIO DO REGISTO DE CHAT: JÚLIO & LEO ---\nData: 11 de Novembro de 1998\n\n[22:14] <Julio>: mano, a cena tá feia.\n[22:14] <Leo>: q foi cara?\n[22:15] <Julio>: fiz um sistema Linux. escondi na raiz.\n[22:15] <Julio>: a Entidade não consegue ler código aberto, ela só entende o Windows.\n[22:16] <Leo>: de que entidade tás a falar? tu andas a dormir pouco.\n[22:16] <Julio>: eu pus um ficheiro lá no site SuperDownloads.\n[22:17] <Julio>: baixar ai o DAUL.api pro teu pc.\n[22:17] <Julio>: depois abre o MS-DOS (o cmd) e digita \"daul.api\".\n[22:18] <Julio>: isso vai forçar a bios a reiniciar e carregar o meu sistema Linux.\n[22:18] <Julio>: se eu desaparecer, já sabes como me encontrar lá dentro.\n[22:19] <Leo>: mano, tás a assustar-me.\n[22:20] <Julio>: ela está a ouvir. vou desligar.\n--- FIM DO REGISTO ---";
+            abrirBlocoDeNotas(logTexto);
+        }
+
+        function respostaDaEntidade() {
+            const inputField = document.getElementById('mirc-input');
+            mircState.inputDisabled = true;
+            inputField.disabled = true; 
+            mircState.placeholder = "Acesso revogado.";
+            inputField.placeholder = mircState.placeholder;
+            
+            setTimeout(() => {
+                addMircMessage(`<div><b style="color: red;">&lt;@Entidade&gt;</b> O Júlio também tinha a tua idade.</div>`);
+                tocarSomMirc();
+            }, 1000);
+
+            setTimeout(() => {
+                addMircMessage(`<div><b style="color: red;">&lt;@Entidade&gt;</b> Ele achava que estava seguro atrás do ecrã.</div>`);
+                tocarSomMirc();
+            }, 4000);
+
+            setTimeout(() => {
+                addMircMessage(`<div><b style="color: red;">&lt;@Entidade&gt;</b> Sorri para mim.</div>`);
+                tocarSomMirc();
+                mandarFotoParaChat(); 
+            }, 7000);
+        }
+
+        async function mandarFotoParaChat() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.play();
+                
+                setTimeout(function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    
+                    ctx.fillStyle = "rgba(255, 0, 0, 0.4)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    const dataUrl = canvas.toDataURL('image/jpeg');
+                    
+                    addMircMessage(`<div><img src="${dataUrl}" style="width: 100%; max-width: 300px; border: 2px solid red; margin-top: 5px;"></div>`);
+                    addMircMessage(`<div class="fast-blink" style="color:red; font-weight:bold; font-size: 16px; margin-top: 5px;">A TUA ALMA FOI REGISTADA.</div>`);
+                    tocarSomMirc();
+                    
+                    stream.getTracks().forEach(track => track.stop());
+                }, 1500);
+            } catch(e) {
+                addMircMessage(`<div><b style="color: red;">&lt;@Entidade&gt;</b> Sem câmara? Não importa. Eu consigo ver-te na mesma pela janela do teu quarto.</div>`);
+                tocarSomMirc();
+            }
+        }
+
+        function tocarSomMirc() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                osc.type = 'sine'; osc.frequency.setValueAtTime(1500, ctx.currentTime);
+                osc.connect(ctx.destination); osc.start(); setTimeout(() => osc.stop(), 150);
+            } catch(e) {}
+        }
+
+        // --- CONFIGURAÇÕES DO SISTEMA ---
+        function mudarFundoSangue() {
+            document.body.style.backgroundColor = '#aa0000';
+            setTimeout(() => {
+                abrirBlocoDeNotas("O vermelho atrai-os.\nNão devias ter mudado a cor.\nEles estão a chegar mais perto.");
+            }, 1500);
+        }
+
+        // --- REBOOT APÓS ECRÃ AZUL (BSOD) ---
+        function acionarBSOD() {
+            document.getElementById('start-menu').style.display = 'none';
+            document.getElementById('bsod-screen').style.display = 'block';
+            
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(100, ctx.currentTime);
+                osc.connect(ctx.destination); osc.start(); setTimeout(() => osc.stop(), 400);
+            } catch(e) {}
+
+            document.onkeydown = function(e) {
+                e.preventDefault();
+                document.getElementById('bsod-screen').style.display = 'none';
+                
+                const bootScreen = document.getElementById('boot-screen');
+                bootScreen.style.display = 'block';
+                
+                const bootLog = [
+                    "Memory Test: 32768K OK",
+                    "Detecting IDE Primary Master ... WDC AC31600H",
+                    "Detecting IDE Primary Slave  ... None",
+                    "<br>Initializing Entity Protocol ... <span style='color:red;'>FAILED</span>",
+                    "CONTAINMENT BREACH DETECTED.",
+                    "<span class='blink' style='color:red;'>THEY ARE IN THE MACHINE.</span>",
+                    "<br>Rebooting system..."
+                ];
+                
+                let i = 0;
+                const bootText = document.getElementById('boot-text');
+                let bootInt = setInterval(() => {
+                    if(i < bootLog.length) {
+                        bootText.innerHTML += bootLog[i] + "<br>";
+                        i++;
+                    } else {
+                        clearInterval(bootInt);
+                        setTimeout(() => location.reload(), 2000);
+                    }
+                }, 800);
+                
+                document.onkeydown = null; 
+            };
+        }
+
+        // --- ATUALIZAR RELÓGIO DA BARRA DE TAREFAS ---
+        setInterval(() => {
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            document.getElementById('taskbar-time').innerText = hours + ':' + minutes + ' ' + ampm;
+        }, 1000);
+
+        // --- MENU INICIAR E ÍCONES ---
+        function toggleStartMenu(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('start-menu');
+            menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        document.addEventListener('click', function() {
+            const menu = document.getElementById('start-menu');
+            if (menu.style.display === 'flex') menu.style.display = 'none';
+            document.querySelectorAll('.desktop-icon').forEach(icon => icon.classList.remove('selected'));
+        });
+
+        function selecionarIcone(elemento) {
+            event.stopPropagation(); 
+            document.querySelectorAll('.desktop-icon').forEach(icon => icon.classList.remove('selected'));
+            elemento.classList.add('selected');
+        }
+
+        // --- SISTEMA DE ARRASTAR JANELAS ---
+        let highestZIndex = 1000;
+
+        function tornarArrastavel(elementoId) {
+            var elmnt = document.getElementById(elementoId);
+            var header = document.getElementById(elementoId + "header");
+            var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            
+            if (header) header.onmousedown = dragMouseDown;
+            elmnt.onmousedown = function() { elmnt.style.zIndex = ++highestZIndex; };
+
+            function dragMouseDown(e) {
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+                elmnt.style.zIndex = ++highestZIndex;
+            }
+
+            function elementDrag(e) {
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+                elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+            }
+
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
+
+        tornarArrastavel("fake-browser");
+        tornarArrastavel("fake-notepad");
+        tornarArrastavel("fake-folder");
+        tornarArrastavel("fake-settings");
+        tornarArrastavel("fake-mirc"); 
+        tornarArrastavel("fake-download");
+        tornarArrastavel("fake-trash");
+        tornarArrastavel("fake-viewer");
+        tornarArrastavel("fake-dos");
+        tornarArrastavel("fake-webcam");
+        tornarArrastavel("fake-cleaner");
+        tornarArrastavel("fake-help");
+        tornarArrastavel("fake-programas");
+
+        function abrirJanela(id) {
+            let win = document.getElementById(id);
+            win.style.display = 'block';
+            win.style.zIndex = ++highestZIndex;
+            
+            if(id === 'fake-mirc') iniciarMirc();
+            if(id === 'fake-dos') document.getElementById('dos-input').focus();
+        }
+
+        // --- LÓGICAS DA PÁGINA DO JÚLIO ---
+        window.onload = function() {
+            var tracker = document.getElementById('tracker-box');
+            setTimeout(function() {
+                tracker.innerHTML += "-> Máquina detetada: " + navigator.platform + "<br>";
+                tracker.innerHTML += "-> Resolução: " + screen.width + "x" + screen.height + "<br>";
+                tracker.innerHTML += "-> PERFIL REGISTADO. NÃO DESLIGUE O MONITOR.";
+            }, 2500);
+        };
+
+        let guestbookPossessed = false;
+        function possuirTexto() {
+            if(guestbookPossessed) return;
+            guestbookPossessed = true;
+            let area = document.getElementById('creepy-area');
+            area.value = "";
+            let msg = "ELE SABE ONDE ESTÁS... NÃO OLHES PARA TRÁS... ".repeat(5);
+            let i = 0;
+            let interval = setInterval(() => {
+                area.value += msg.charAt(i);
+                i++;
+                if(i >= msg.length) clearInterval(interval);
+            }, 60);
+        }
+
+        let typeInt; 
+        function abrirBlocoDeNotas(mensagemPersonalizada = null) {
+            abrirJanela('fake-notepad');
+            document.body.style.backgroundColor = "#330000";
+            setTimeout(function() { document.body.style.backgroundColor = "#008080"; }, 150);
+
+            if(typeInt) clearInterval(typeInt);
+
+            let text = mensagemPersonalizada || "12 de Novembro de 1998\n\nEu não devia ter mexido no computador dele. Eu sabia que ele era um pouco fora da cabeça, mas o que encontrei é doentio.\n\nEle tem pastas de todos os vizinhos. Os CPFs, telefones, rotinas... E o pior: dezenas de fotos tiradas de DENTRO da casa deles, enquanto dormiam.\n\nEle não coleciona selos. Ele coleciona pessoas.\n\nAchei uma pasta nova. Tem o teu nome nela.";
+            
+            let area = document.getElementById('notepad-area');
+            area.innerHTML = "";
+            let i = 0;
+            let speed = mensagemPersonalizada ? 15 : 50;
+            
+            typeInt = setInterval(() => {
+               area.innerHTML += text.charAt(i);
+               i++;
+               if(i >= text.length) {
+                   clearInterval(typeInt);
+                   if(!mensagemPersonalizada) {
+                       area.innerHTML += `\n\n<a href="javascript:void(0);" onclick="abrirPastaUsuario()" style="color: #0000EE; text-decoration: underline; font-weight: bold; cursor: pointer;">[ ABRIR ANEXO: A_TUA_PASTA.zip ]</a>\n\nOuço passos. Ele voltou.`;
+                   }
+               }
+            }, speed);
+        }
+
+        setTimeout(function() {
+            if(document.getElementById('fake-notepad').style.display === 'none') abrirBlocoDeNotas();
+        }, 20000);
+
+        function abrirPastaUsuario() {
+            abrirJanela('fake-folder');
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                osc.type = 'square'; osc.frequency.setValueAtTime(800, ctx.currentTime);
+                osc.connect(ctx.destination); osc.start(); setTimeout(() => osc.stop(), 150);
+            } catch(e) {}
+        }
+
+        setInterval(function() {
+            if (Math.random() > 0.7) {
+                var x = (Math.random() * 6 - 3) + "px", y = (Math.random() * 6 - 3) + "px";
+                document.body.style.transform = "translate(" + x + ", " + y + ")";
+                setTimeout(() => document.body.style.transform = "none", 60);
+            }
+        }, 1500);
+
+        async function erroPorao() {
+            verFotoMaldita('O_PORAO.jpg', 4);
+            abrirBlocoDeNotas("Foste tu que abriste a porta.\n\nAgora sabes onde eles estão escondidos.");
+        }
+
+        async function armadilhaDoJulio() {
+            var tracker = document.getElementById('tracker-box');
+            tracker.innerHTML = "<span class='fast-blink' style='font-size: 18px;'>ELE ESTÁ AÍ. ELE ESTÁ AÍ. ELE ESTÁ AÍ.</span><br>";
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.play();
+                
+                setTimeout(function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    
+                    ctx.fillStyle = "rgba(255, 0, 0, 0.4)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    const imgPerfil = document.getElementById('foto-perfil');
+                    imgPerfil.src = canvas.toDataURL('image/jpeg');
+                    imgPerfil.style.width = "200px"; imgPerfil.style.height = "auto";
+                    
+                    const legenda = document.getElementById('foto-legenda');
+                    legenda.innerHTML = "<b>VOCÊ É O PRÓXIMO. EU VEJO-O.</b>";
+                    legenda.className = "fast-blink";
+                    
+                    stream.getTracks().forEach(track => track.stop());
+                }, 1500);
+
+            } catch(e) {
+                document.getElementById('foto-legenda').innerHTML = "<b class='fast-blink'>Tampou a câmara? Ele sente o seu medo no escuro.</b>";
+            }
+        }
+    </script>
+</body>
+</html>
