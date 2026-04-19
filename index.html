@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acesso Remoto - Máquina do Júlio</title>
+    
+    <!-- Importar bibliotecas 3D (Three.js) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
+
     <style>
         /* Estilos do Sistema Operativo (Windows 95/98) */
         body {
@@ -374,7 +380,6 @@
 
                     <hr>
 
-                    <!-- LORE EXPANDIDA: PENSAMENTOS DO JÚLIO -->
                     <h2 id="pensamentos" style="color: #FF8800;">Pensamentos Recentes (Diário Público)</h2>
                     <p><b>10/11/1998</b> - O Leo acha que eu estou maluco. Ele não entende que as janelas do Windows não são seguras. Elas têm olhos. Eu tapei a minha webcam com fita isolante, mas acho que <i>ele</i> consegue ver através do próprio monitor.</p>
                     <p><b>08/11/1998</b> - Encomendei cadeados novos na loja WebMercado 99. Também comprei um livro sobre sistemas alternativos. Código aberto é a única saída. O que está escondido no código fechado da Microsoft? Se ele tomar o meu Windows, eu fujo para outro sistema.</p>
@@ -428,13 +433,11 @@
                 </div>
             </div>
 
-            <!-- SITE 3: O NOVO WEBMERCADO 99 -->
+            <!-- SITE 3: WEBMERCADO 99 -->
             <div id="page-store" style="display:none; background:#ffffff; color:#000; min-height:100%; padding:30px; font-family: Arial, sans-serif; box-sizing: border-box;">
                 <h1 style="color: blue; text-align: center; border-bottom: 2px solid blue; padding-bottom: 10px;">🛒 WebMercado 99</h1>
                 <p style="text-align: center; font-style: italic; font-size: 14px; color: #666;">A sua loja de conveniência na SuperVia da Informação!</p>
-                
                 <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 30px;">
-                    
                     <div style="border: 1px solid #ccc; padding: 15px; display: flex; gap: 20px; align-items: center; background: #f9f9f9;">
                         <div style="width: 80px; height: 80px; background: #eee; display:flex; align-items:center; justify-content:center; font-size:40px;">🔒</div>
                         <div style="flex-grow: 1;">
@@ -444,7 +447,6 @@
                             <p style="font-size: 12px; color: #666; margin-top: 5px;"><i>Último comprador: J. Almeida - "Preciso de trancar a porta do porão por fora."</i></p>
                         </div>
                     </div>
-
                     <div style="border: 1px solid #ccc; padding: 15px; display: flex; gap: 20px; align-items: center; background: #f9f9f9;">
                         <div style="width: 80px; height: 80px; background: #eee; display:flex; align-items:center; justify-content:center; font-size:40px;">🐧</div>
                         <div style="flex-grow: 1;">
@@ -454,7 +456,6 @@
                             <p style="font-size: 12px; color: #666; margin-top: 5px;"><i>Último comprador: J. Almeida - "O Windows tem olhos. O código aberto é cego. A salvação é o DAUL."</i></p>
                         </div>
                     </div>
-
                     <div style="border: 1px solid #ccc; padding: 15px; display: flex; gap: 20px; align-items: center; background: #ffeeee; border-color: red;">
                         <div style="width: 80px; height: 80px; background: #000; display:flex; align-items:center; justify-content:center; font-size:40px; filter: grayscale(1);">👁️</div>
                         <div style="flex-grow: 1;">
@@ -464,11 +465,10 @@
                             <button onclick="alert('Instalação concluída. Sorria para o ecrã, nós estamos a ver-te.')" style="cursor:pointer; color:red; font-weight:bold; padding: 5px 15px; margin-top: 5px;">Verificar Câmera</button>
                         </div>
                     </div>
-
                 </div>
             </div>
 
-            <!-- SITE 4: DOWNLOADS (APKs/EXEs) -->
+            <!-- SITE 4: DOWNLOADS -->
             <div id="page-downloads" style="display:none; background:#000080; color:white; min-height:100%; padding:30px; font-family: 'Tahoma', sans-serif; box-sizing: border-box;">
                 <h1 style="color: yellow; text-shadow: 2px 2px black; font-size: 32px; text-align: center;">⬇️ SuperDownloads 98 ⬇️</h1>
                 <p style="text-align: center; font-size: 16px;">O maior acervo de shareware e freeware da internet mundial!</p>
@@ -484,12 +484,6 @@
                     <h3 style="margin-top: 0; color: #00ff00; font-size: 22px;">🛡️ DAUL.api - Ferramenta de Recuperação (14 KB)</h3>
                     <p>Ficheiro de sistema encriptado de origem desconhecida. Executar <b>apenas</b> no MS-DOS em caso de infestação profunda por Entidades.</p>
                     <button onclick="baixarDAUL()" style="background: #c0c0c0; color: black; font-weight: bold; padding: 8px 20px; cursor: pointer; border: 2px outset #fff; margin-top: 10px;">Baixar DAUL.api</button>
-                </div>
-                
-                <div style="background: #0000aa; padding: 20px; border: 2px ridge #ffffff; margin-top: 20px;">
-                    <h3 style="margin-top: 0; color: #aaaaaa; font-size: 22px;">⚠️ Limpador de Registo.exe (500 KB)</h3>
-                    <p style="color: #ccc;">O seu PC está lento? Alguém o está a observar pelos registos? Tente limpar tudo! (Link Quebrado)</p>
-                    <button onclick="alert('Erro 404. O ficheiro foi apagado da base de dados por um utilizador com privilégios obscuros.')" style="background: #808080; color: #444; font-weight: bold; padding: 8px 20px; cursor: not-allowed; border: 2px outset #666; margin-top: 10px;">Indisponível</button>
                 </div>
             </div>
 
@@ -524,9 +518,6 @@
                 <div id="download-progress" class="win-progress-bar"></div>
             </div>
             <p id="download-status">A transferir: 0% concluído</p>
-            <div style="text-align: center; margin-top: 15px;">
-                <button disabled style="background: #c0c0c0; border: 2px outset #fff; padding: 2px 15px; cursor: not-allowed;">Cancelar</button>
-            </div>
         </div>
     </div>
 
@@ -584,15 +575,10 @@
             <button onclick="document.body.style.backgroundColor = '#008080'" style="background: #ddd; border: 2px outset #fff; padding: 5px; cursor: pointer;">Padrão (Teal)</button>
             <button onclick="document.body.style.backgroundColor = 'black'" style="background: black; color: white; border: 2px outset #fff; padding: 5px; cursor: pointer;">Preto Vazio</button>
             <button onclick="mudarFundoSangue()" style="background: #aa0000; color: white; border: 2px outset #fff; padding: 5px; cursor: pointer;">Vermelho Sangue</button>
-            <br><br>
-            <hr style="border: 0; border-top: 1px solid #808080; border-bottom: 1px solid #fff;">
-            <br>
-            <p style="margin-top: 0;"><b>Privacidade do Utilizador:</b></p>
-            <button onclick="alert('ERRO DE PERMISSÃO: O administrador \"Entidade\" bloqueou a desativação da câmara e microfone.')" style="background: #c0c0c0; border: 2px outset #fff; padding: 5px 15px; cursor: pointer; width: 100%;">Desativar Câmara/Microfone</button>
         </div>
     </div>
 
-    <!-- JANELA 5: O Novo mIRC Chat (COM MEMÓRIA E PERSISTÊNCIA) -->
+    <!-- JANELA 5: O Novo mIRC Chat -->
     <div id="fake-mirc" class="win-window" style="width: 500px; height: 350px; top: 20%; left: 25%; color: black;">
         <div id="fake-mircheader" class="win-header">
             <span>💬 mIRC32 - [#sala_oculta]</span>
@@ -621,7 +607,7 @@
         </div>
     </div>
 
-    <!-- JANELA 6: A Lixeira (FOTOS ESTRANHAS COM SEMENTE FIXA) -->
+    <!-- JANELA 6: A Lixeira -->
     <div id="fake-trash" class="win-window" style="width: 450px; top: 15%; left: 40%; color: black;">
         <div id="fake-trashheader" class="win-header">
             <span>🗑️ C:\WINDOWS\Lixeira</span>
@@ -639,10 +625,6 @@
                 <li style="text-align: center; cursor: pointer; width: 80px;" onclick="verFotoMaldita('nao_olhe.bmp', 2)">
                     <span style="font-size: 40px; filter: grayscale(1);">🖼️</span><br>
                     <span style="font-size: 12px; word-wrap: break-word;">nao_olhe.bmp</span>
-                </li>
-                <li style="text-align: center; cursor: pointer; width: 80px;" onclick="verFotoMaldita('quarto_julio.png', 3)">
-                    <span style="font-size: 40px; filter: grayscale(1);">🖼️</span><br>
-                    <span style="font-size: 12px; word-wrap: break-word;">quarto_julio.png</span>
                 </li>
             </ul>
         </div>
@@ -703,6 +685,19 @@
     <!-- O LINUX SALVADOR (LORE DO JÚLIO) -->
     <div id="linux-screen" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; color: #fff; font-family: 'Courier New', Courier, monospace; z-index: 99999999; padding: 20px; box-sizing: border-box; overflow-y: auto;">
         <div id="linux-text"></div>
+    </div>
+
+    <!-- JOGO 3D FINAL OVERLAY (A Ligação) -->
+    <div id="game-start-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; color:red; z-index:999999999; justify-content:center; align-items:center; flex-direction:column; cursor:pointer;">
+        <h1 class="fast-blink" style="font-family: 'Courier New', monospace; text-align:center; font-size:40px;">A LIGAÇÃO ESTÁ FEITA.</h1>
+        <p style="font-family: 'Courier New', monospace; font-size:20px; color:#aaa;">CLIQUE EM QUALQUER LUGAR PARA ABRIR OS OLHOS.</p>
+        <p style="font-family: 'Courier New', monospace; font-size:14px; color:#555; margin-top: 50px;">Use W A S D para andar. O rato para olhar ao redor.</p>
+    </div>
+
+    <!-- JOGO 3D FINAL CONTAINER -->
+    <div id="game-container" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:999999998;">
+        <!-- Mira do jogo -->
+        <div style="position:absolute; top:50%; left:50%; width:4px; height:4px; background:rgba(255,255,255,0.5); transform:translate(-50%,-50%); border-radius:50%; z-index: 10;"></div>
     </div>
 
     <!-- Menu Iniciar -->
@@ -802,11 +797,7 @@
             } else if(tipo === 2) {
                 imgViewer.src = `https://loremflickr.com/400/400/abandoned,room?lock=13`;
                 descViewer.innerText = "A porta estava trancada por dentro. Como é que a entidade conseguiu entrar?";
-            } else if(tipo === 3) {
-                imgViewer.src = `https://loremflickr.com/400/400/shadow,scary?lock=42`;
-                descViewer.innerText = "O quarto do Júlio após o desaparecimento. Ele foi o primeiro a ser consumido.";
             } else if(tipo === 4) {
-                // A FOTO REAL DO PORÃO!
                 imgViewer.src = `https://loremflickr.com/500/400/basement,creepy?lock=999`;
                 descViewer.innerText = "O Porão. Foi aqui que tudo começou. Há manchas no chão e correntes quebradas.";
             }
@@ -894,7 +885,7 @@
             }
         });
 
-        // --- LINUX REBOOT SEQUENCE (A SALVAÇÃO/LORE DO JÚLIO) ---
+        // --- LINUX REBOOT SEQUENCE (A SALVAÇÃO/LORE DO JÚLIO) E TRANSIÇÃO PARA JOGO 3D ---
         function iniciarLinux() {
             document.querySelector('.desktop-icons').style.display = 'none';
             document.querySelector('.taskbar').style.display = 'none';
@@ -929,7 +920,7 @@
                     "Não voltes. Ela está furiosa por teres escapado do ambiente gráfico dela.",
                     "Fecha a aba do teu navegador agora. É a única forma de cor-",
                     "<br><span style='color:red; font-size:24px; font-weight:bold;'>TU ACHAS QUE ESTÁS SEGURO AQUI?</span>",
-                    "<span style='color:red; font-size:24px; font-weight:bold;'>O LINUX NÃO TE VAI PROTEGER DE MIM. EU SOU A MÁQUINA.</span>"
+                    "<span style='color:red; font-size:24px; font-weight:bold;'>O LINUX NÃO TE VAI PROTEGER DE MIM. EU SOU A MÁQUINA. E O PORÃO ESTÁ A TUA ESPERA.</span>"
                 ];
 
                 let i = 0;
@@ -947,7 +938,12 @@
                         setTimeout(() => {
                             linuxScreen.innerHTML = "<h1 class='fast-blink' style='color:red; text-align:center; font-size: 50px; margin-top:20%'>SISTEMA CORROMPIDO.</h1>";
                             tocarSomErroGrave();
-                            setTimeout(() => location.reload(), 2500); 
+                            
+                            // Em vez de recarregar a página (location.reload), abre o jogo 3D!
+                            setTimeout(() => {
+                                document.getElementById('linux-screen').style.display = 'none';
+                                document.getElementById('game-start-overlay').style.display = 'flex';
+                            }, 3500); 
                         }, 4000);
                     }
                 }, 1500);
@@ -964,6 +960,155 @@
                 osc.start();
                 setTimeout(() => osc.stop(), 800);
             } catch(e) {}
+        }
+
+
+        // --- O JOGO 3D DE TERROR (THREE.JS) ---
+        let scene, camera, renderer, controls;
+        let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+        let prevTime = performance.now();
+        let velocity = new THREE.Vector3();
+        let direction = new THREE.Vector3();
+        let flashlight;
+        let gameStarted = false;
+
+        document.getElementById('game-start-overlay').addEventListener('click', function() {
+            if(!gameStarted) {
+                gameStarted = true;
+                iniciarJogo3D();
+            } else if (controls) {
+                controls.lock(); // Recarrega o cursor caso tenha saído
+            }
+        });
+
+        function iniciarJogo3D() {
+            document.getElementById('game-start-overlay').style.display = 'none';
+            document.getElementById('game-container').style.display = 'block';
+
+            scene = new THREE.Scene();
+            // Nevoeiro denso e escuro para dar sensação de terror cego
+            scene.fog = new THREE.FogExp2(0x020202, 0.08); 
+
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('game-container').appendChild(renderer.domElement);
+
+            controls = new THREE.PointerLockControls(camera, document.body);
+            controls.lock();
+
+            // Som de batimento cardíaco ambiente
+            tocarBatimentoContinuo();
+
+            // Iluminação do cenário
+            const ambientLight = new THREE.AmbientLight(0x111111); // Luz ambiente quase nula
+            scene.add(ambientLight);
+
+            // Lanterna acoplada ao jogador (câmara)
+            flashlight = new THREE.PointLight(0xffffee, 1, 20); // Luz da lanterna com alcance curto de 20 metros
+            camera.add(flashlight);
+            scene.add(camera);
+
+            // Carregamento do ficheiro horror_map.glb
+            const loader = new THREE.GLTFLoader();
+            loader.load('horror_map.glb', function(gltf) {
+                const mapScene = gltf.scene;
+                
+                // Centralizar o mapa (visto que o ficheiro pode ter deslocamentos)
+                const box = new THREE.Box3().setFromObject(mapScene);
+                const center = box.getCenter(new THREE.Vector3());
+                mapScene.position.sub(center); // Move o mapa para 0,0,0
+                
+                scene.add(mapScene);
+                
+                // Colocar o jogador acima do chão do mapa carregado
+                camera.position.set(0, 1.5, 0); 
+            }, undefined, function(error) {
+                console.error("Erro a carregar o mapa GLB:", error);
+                // Caso não encontre o ficheiro GLB localmente, cria um "vazio" assustador básico
+                const roomGeometry = new THREE.BoxGeometry( 40, 10, 40 );
+                const roomMaterial = new THREE.MeshStandardMaterial( {color: 0x333333, side: THREE.BackSide} );
+                const room = new THREE.Mesh( roomGeometry, roomMaterial );
+                scene.add(room);
+                camera.position.set(0, 1.5, 0);
+            });
+
+            // Controlos de Movimento (Teclado)
+            const onKeyDown = function (event) {
+                switch (event.code) {
+                    case 'ArrowUp': case 'KeyW': moveForward = true; break;
+                    case 'ArrowLeft': case 'KeyA': moveLeft = true; break;
+                    case 'ArrowDown': case 'KeyS': moveBackward = true; break;
+                    case 'ArrowRight': case 'KeyD': moveRight = true; break;
+                }
+            };
+            const onKeyUp = function (event) {
+                switch (event.code) {
+                    case 'ArrowUp': case 'KeyW': moveForward = false; break;
+                    case 'ArrowLeft': case 'KeyA': moveLeft = false; break;
+                    case 'ArrowDown': case 'KeyS': moveBackward = false; break;
+                    case 'ArrowRight': case 'KeyD': moveRight = false; break;
+                }
+            };
+            document.addEventListener('keydown', onKeyDown);
+            document.addEventListener('keyup', onKeyUp);
+
+            // Adapta o tamanho ao redimensionar a janela
+            window.addEventListener('resize', function() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            animarJogo3D();
+        }
+
+        function animarJogo3D() {
+            requestAnimationFrame(animarJogo3D);
+            const time = performance.now();
+            
+            if (controls.isLocked === true) {
+                const delta = (time - prevTime) / 1000;
+                
+                // Fricção para parar
+                velocity.x -= velocity.x * 10.0 * delta;
+                velocity.z -= velocity.z * 10.0 * delta;
+
+                direction.z = Number(moveForward) - Number(moveBackward);
+                direction.x = Number(moveRight) - Number(moveLeft);
+                direction.normalize(); // Assegura movimento consistente em todas as direções
+
+                const speed = 25.0; // Velocidade do passo
+                if (moveForward || moveBackward) velocity.z -= direction.z * speed * delta;
+                if (moveLeft || moveRight) velocity.x -= direction.x * speed * delta;
+
+                controls.moveRight(-velocity.x * delta);
+                controls.moveForward(-velocity.z * delta);
+
+                // Efeito de Lanterna a Falhar (Flicker)
+                if (Math.random() > 0.96) {
+                    flashlight.intensity = 0.2 + Math.random() * 0.8; // Oscila entre luz fraca e forte
+                } else {
+                    flashlight.intensity = 1.2;
+                }
+            }
+            prevTime = time;
+            renderer.render(scene, camera);
+        }
+
+        function tocarBatimentoContinuo() {
+            setInterval(() => {
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const osc = ctx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(40, ctx.currentTime); // Frequência muito baixa (Coração)
+                    osc.connect(ctx.destination);
+                    osc.start();
+                    setTimeout(() => osc.stop(), 200);
+                } catch(e) {}
+            }, 1000); // Bate a cada 1 segundo
         }
 
 
@@ -1133,6 +1278,15 @@
                 addMircMessage(`<div><b style="color: red;">&lt;@Entidade&gt;</b> Sem câmara? Não importa. Eu consigo ver-te na mesma pela janela do teu quarto.</div>`);
                 tocarSomMirc();
             }
+        }
+
+        function tocarSomMirc() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                osc.type = 'sine'; osc.frequency.setValueAtTime(1500, ctx.currentTime);
+                osc.connect(ctx.destination); osc.start(); setTimeout(() => osc.stop(), 150);
+            } catch(e) {}
         }
 
         // --- CONFIGURAÇÕES DO SISTEMA ---
@@ -1349,7 +1503,6 @@
         }, 1500);
 
         async function erroPorao() {
-            // Nova Lore: Abre direto a foto do porão com um aviso
             verFotoMaldita('O_PORAO.jpg', 4);
             abrirBlocoDeNotas("Foste tu que abriste a porta.\n\nAgora sabes onde eles estão escondidos.");
         }
